@@ -1,0 +1,97 @@
+/* Copyright (C) 2015 droppinstackz
+ *
+ * This file is part of Checksum Calculator.
+ *
+ * Checksum Calculator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Checksum Calculator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*@font-face {
+    font-family: OpenSans-Bold;
+    src: url(file:resources/fonts/OpenSans-Bold.ttf);
+}*/
+
+.root {
+    -fx-background-color: #ffffff;
+
+    /*-fx-font-family: 'Helvetica Neue';*/
+    /*-fx-font-family: 'Vera';*/
+    /*-fx-font-size: 14.0px;*/
+
+    -flatter-red: rgb(237.0, 68.0, 37.0);
+    -flatter-blue: rgb(0.0, 184.0, 222.0);
+    -dark: rgb(47.0, 52.0, 57.0);
+}
+
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
+.choice-box {
+    -fx-background-color: #DFDBDF;
+}
+    /* To prevent focused elements from looking selected */
+.choice-box:focused{
+    -fx-background-color: #DFDBDF;
+}
+
+
+/* Default look for all buttons */
+.button{
+    -fx-background-color: #DFDBDF;
+    -fx-background-insets:  0.0;
+    -fx-background-radius: 2.0;
+    -fx-border-width: 0.0;
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+}
+    /* To prevent focused elements from looking selected */
+.button:focused{
+    -fx-background-color: #DFDBDF;
+}
+    /* Button color when cursor is hovering */
+.button:hover{
+    -fx-background-color: derive(-flatter-red, 50.0%);
+}
+    /* Button color when clicked */
+.button:armed{
+    -fx-background-color: derive(-flatter-red, -5.0%);
+}
+
+
+/* Default look for all checkboxes */
+.check-box:determinate .box {
+    -fx-background-color: #DFDBDF;
+}
+    /* To prevent focused elements from looking selected */
+.check-box:determinate  .box:focused{
+    -fx-background-color: #DFDBDF;
+}
+    /* Checkbox color when cursor is hovering */
+.check-box:determinate:hover .box{
+    -fx-background-color: derive(-flatter-red, 50.0%);
+}
+
+
+/* Default look for all text fields */
+.text-area , .text-field {
+    -fx-background-color: #DFDBDF, white;
+    -fx-background-insets: 0.0, 0.2em;
+    -fx-background-radius: 2.0;
+}
+
+
+/*
+.label {
+    -fx-background-color: #DDFFDD;
+}*/

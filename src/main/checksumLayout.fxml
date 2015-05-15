@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+        Copyright (C) 2015 droppinstackz
+        *
+        * This file is part of Checksum Calculator.
+        *
+        * Checksum Calculator is free software: you can redistribute it and/or modify
+        * it under the terms of the GNU General Public License as published by
+        * the Free Software Foundation, either version 3 of the License, or
+        * (at your option) any later version.
+        *
+        * Checksum Calculator is distributed in the hope that it will be useful,
+        * but WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        * GNU General Public License for more details.
+        *
+        * You should have received a copy of the GNU General Public License
+        * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<GridPane fx:controller="main.Controller" xmlns:fx="http://javafx.com/fxml">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="375.0" minWidth="10.0" prefWidth="375.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="361.0" minHeight="3.0" prefHeight="153.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="346.0" minHeight="10.0" prefHeight="254.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Button fx:id="openButton" text="Open" onMouseClicked="#handleOpenButtonAction" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <ChoiceBox fx:id="inputType" onMouseExited="#handleInputTypeSelection" prefHeight="25.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <ChoiceBox fx:id="algorithmType"  prefHeight="25.0" prefWidth="100.0" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <TextField fx:id="inputTextField"  prefHeight="28.0" prefWidth="321.0" GridPane.valignment="TOP" />
+                <Button fx:id="generateButton" text="Generate" onMouseClicked="#handleGenerateButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+            </children>
+        </GridPane>
+        <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="69.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="78.0" minHeight="78.0" prefHeight="78.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="77.0" minHeight="77.0" prefHeight="77.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Separator prefWidth="200.0" />
+                <Label prefHeight="28.0" text="Result:" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+                <CheckBox fx:id="compareToCheckbox" onMouseClicked="#handleCompareToSelect" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" text="Compare To:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                <Button fx:id="pasteButton" text="Paste" onMouseClicked="#handlePasteButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                    <GridPane.margin>
+                        <Insets right="-45.0" />
+                    </GridPane.margin></Button>
+                <Label fx:id="firstChecksum" prefHeight="64.0" prefWidth="321.0" text="" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                    <font>
+                        <Font name="Quicksand-Bold" size="13.0" />
+                        <!--<Font name="DejaVu Sans Mono Bold" size="13.0" />-->
+                    </font>
+                </Label>
+                <Button fx:id="copyButton" text="Copy" onMouseClicked="#handleCopyButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+                <Button fx:id="clearButton" text="Clear" onMouseClicked="#handleClearButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                <Label fx:id="secondChecksum" prefHeight="64.0" prefWidth="321.0" text="" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+                    <font>
+                        <Font name="OpenSans-Bold" size="13.0" />
+                        <!--<Font name="DejaVu Sans Mono Bold" size="13.0" />-->
+                    </font>
+                </Label>
+            </children>
+        </GridPane>
+    </children>
+
+    <stylesheets>
+        <URL value="@checksumCSS.css" />
+    </stylesheets>
+
+</GridPane>
