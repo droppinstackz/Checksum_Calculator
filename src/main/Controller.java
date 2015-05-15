@@ -84,7 +84,7 @@ public class Controller implements Initializable {
         firstChecksum.setText("");
         secondChecksum.setText("");
         inputTextField.setDisable(false);
-//        openButton.setDisable(true);
+        openButton.setDisable(true);
         compareToCheckbox.setSelected(false);
         pasteButton.setDisable(true);
         clearButton.setDisable(true);
@@ -117,10 +117,10 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handlePasteButtonAction(Event event) {
-        // Retrieve contents from the clipboard
-        Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
-
+        pasteButton.setDisable(true);
         try {
+            // Retrieve contents from the clipboard
+            Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable validContents = clipboardPaste.getContents(null);
 
             // If the contents are not null and are of type string
@@ -150,6 +150,7 @@ public class Controller implements Initializable {
             secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
             e.printStackTrace();
         }
+        pasteButton.setDisable(false);
     }
 
     @FXML protected void handleCopyButtonAction(Event event) {
@@ -170,13 +171,13 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handleInputTypeSelection(Event event) {
-        if(inputType.getValue().toString().equals("Text")) {
-            inputTextField.setDisable(false);
-            openButton.setDisable(true);
-        } else if(inputType.getValue().toString().equals("File")){
-            inputTextField.setDisable(true);
-            openButton.setDisable(false);
-        }
+//        if(inputType.getValue().toString().equals("Text")) {
+//            inputTextField.setDisable(false);
+//            openButton.setDisable(true);
+//        } else if(inputType.getValue().toString().equals("File")){
+//            inputTextField.setDisable(true);
+//            openButton.setDisable(false);
+//        }
     }
 
     @FXML protected void handleCompareToSelect(Event event) {
