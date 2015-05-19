@@ -114,6 +114,7 @@ public class Controller implements Initializable {
         generateButton.setDisable(false);
 
         inputTextField.requestFocus();
+        if(compareToCheckbox.isSelected()) { compareChecksums(); }
     }
 
     @FXML protected void handlePasteButtonAction(Event event) {
@@ -143,6 +144,7 @@ public class Controller implements Initializable {
                             "Please paste in a valid checksum result.");
                 } else {
                     secondChecksum.setText(clipboardContents);
+                    compareChecksums();
                 }
             }
         } catch (IllegalStateException e) {
@@ -187,10 +189,26 @@ public class Controller implements Initializable {
             clearButton.setDisable(false);
             secondChecksum.setDisable(false);
             pasteButton.setDisable(false);
+            // enable colors
         } else {
             pasteButton.setDisable(true);
             clearButton.setDisable(true);
             secondChecksum.setDisable(true);
+            // disable colors
         }
     }
+
+    private void compareChecksums() {
+        if (secondChecksum.getText() != "" && secondChecksum.getText().equals(firstChecksum.getText())) {
+//            secondChecksum.setText(secondChecksum.getText() + " --Good");
+            firstChecksum.setStyle("-fx-background-color: #E2FDE3");
+            secondChecksum.setStyle("-fx-background-color: #E2FDE3");
+
+        } else if(secondChecksum.getText() != "") {
+//            secondChecksum.setText(secondChecksum.getText() + " --Bad");
+            firstChecksum.setStyle("-fx-background-color: #FFE4E4");
+            secondChecksum.setStyle("-fx-background-color: #FFE4E4");
+        }
+    }
+
 }
