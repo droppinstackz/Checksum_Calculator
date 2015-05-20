@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.event.Event;
+//import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
@@ -55,13 +55,18 @@ public class Controller implements Initializable {
     @FXML private Label firstChecksum;
     @FXML private Label secondChecksum;
 
+
+    private static String CSS_BACKGROUND_GREEN = "-fx-background-color: #E2FDE3";
+    private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
+    private static String CSS_BACKGROUND_WHITE = "-fx-background-color: #FFFFFF";
+
+//    private static String ALGORITHM_SELECTION = "MD5";
+
     // application will have to remember the algorithm selection, input type selection, and checkbox selection
-    private static String ALGORITHM_SELECTION = "MD5";
     // compare checksums when generate or paste button is pushed
     // do not compare when field is empty or when compareTo is disabled
     // add a 'Copied' label (in red) to the right of the copy button after it is pushed
     // text from handleOpenButtonAction is not cleared when 'Text' entry is selected
-
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -93,12 +98,12 @@ public class Controller implements Initializable {
         inputTextField.requestFocus();
     }
 
-    @FXML protected void handleEnterKey(Event event) {
+    @FXML protected void handleEnterKey() {
         // If 'Enter' key is pressed while the inputTextField is focused, automatically generate the checksum
-        handleGenerateButtonAction(event);
+        handleGenerateButtonAction();
     }
 
-    @FXML protected void handleInputTypeSelection(Event event) {
+    @FXML protected void handleInputTypeSelection() {
         if(inputType.getValue().toString().equals("Text")) {
             inputTextField.setDisable(false);
             openButton.setDisable(true);
@@ -108,21 +113,21 @@ public class Controller implements Initializable {
         }
     }
 
-    @FXML protected void handleOpenButtonAction(Event event) {
+    @FXML protected void handleOpenButtonAction() {
         // need to handle open dialog
         // need to find out how to create ellipses in middle of file path
 //        inputTextField.setText("C:\\Users\\imaginary\\file\\path\\to\\nowhere\\with\\no\\end\\in\\sight.txt");
 //        secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
     }
 
-    @FXML protected void handleGenerateButtonAction(Event event) {
+    @FXML protected void handleGenerateButtonAction() {
         // Prevent the user from flooding the checksum generator function
         generateButton.setDisable(true);
 
         // The wait text will remain displayed while the checksum is being generated
         firstChecksum.setText("                                  Generating...\n" +
                 "                          (This may take a while)");
-//        ALGORITHM_SELECTION = algorithmType.getValue().toString();
+
         firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
 
         generateButton.setDisable(false);
@@ -131,7 +136,7 @@ public class Controller implements Initializable {
         if(compareToCheckbox.isSelected()) { compareChecksums(); }
     }
 
-    @FXML protected void handleCopyButtonAction(Event event) {
+    @FXML protected void handleCopyButtonAction() {
         // Copy the checksum text into the user's system clipboard if it is not empty
         if(!firstChecksum.getText().equals("")){
             StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
@@ -141,7 +146,7 @@ public class Controller implements Initializable {
         }
     }
 
-    @FXML protected void handleCompareToSelect(Event event) {
+    @FXML protected void handleCompareToSelect() {
         // If the compareTo checkbox is checked, enable the clear button, paste button, and second
         // checksum field. If it is not checked, disable the items.
         if(compareToCheckbox.isSelected()) {
@@ -161,7 +166,7 @@ public class Controller implements Initializable {
         }
     }
 
-    @FXML protected void handlePasteButtonAction(Event event) {
+    @FXML protected void handlePasteButtonAction() {
         pasteButton.setDisable(true);
         try {
             // Retrieve contents from the clipboard
@@ -193,15 +198,15 @@ public class Controller implements Initializable {
             }
         } catch (Exception e) {
             secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
-            clearHighlights();
+            secondChecksum.setStyle(CSS_BACKGROUND_RED);
 //            e.printStackTrace();
         }
         pasteButton.setDisable(false);
     }
 
-    @FXML protected void handleClearButtonAction(Event event) {
+    @FXML protected void handleClearButtonAction() {
         // Set the text in the second checksum field to an empty string if it is not already empty
-        if(secondChecksum.getText() != "") {
+        if(!secondChecksum.getText().equals("")) {
             secondChecksum.setText("");
             clearHighlights();
         }
@@ -212,27 +217,26 @@ public class Controller implements Initializable {
      * they are highlighted green, but if they are different, set the background to red.
      */
     private void compareChecksums() {
-        if (secondChecksum.getText() != "" && secondChecksum.getText().equals(firstChecksum.getText())) {
+        if (!secondChecksum.getText().equals("") && secondChecksum.getText().equals(firstChecksum.getText())) {
             // set color to green
             // the checksums are the same & there is non-null text to compare
-            firstChecksum.setStyle("-fx-background-color: #E2FDE3");
-            secondChecksum.setStyle("-fx-background-color: #E2FDE3");
+            firstChecksum.setStyle(CSS_BACKGROUND_GREEN);
+            secondChecksum.setStyle(CSS_BACKGROUND_GREEN);
 
-        } else if(secondChecksum.getText() != "") {
+        } else if(!secondChecksum.getText().equals("")) {
             // set color to red
             // the checksums are not the same & there is non-null text to compare
-            firstChecksum.setStyle("-fx-background-color: #FFE4E4");
-            secondChecksum.setStyle("-fx-background-color: #FFE4E4");
+            firstChecksum.setStyle(CSS_BACKGROUND_RED);
+            secondChecksum.setStyle(CSS_BACKGROUND_RED);
         }
     }
 
     /**
      * Private method that removes any highlighting on both checksum results
-     *
      */
     private void clearHighlights() {
-        firstChecksum.setStyle("-fx-background-color: #FFFFFF");
-        secondChecksum.setStyle("-fx-background-color: #FFFFFF");
+        firstChecksum.setStyle(CSS_BACKGROUND_WHITE);
+        secondChecksum.setStyle(CSS_BACKGROUND_WHITE);
     }
 
 }
