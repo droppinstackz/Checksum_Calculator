@@ -3,7 +3,6 @@ import javafx.fxml.FXML;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -48,7 +47,7 @@ public class Controller implements Initializable {
     @FXML private Button openButton;
     @FXML private Button generateButton;
 
-    @FXML private Button copyButton;
+//    @FXML private Button copyButton;
     @FXML private Button pasteButton;
     @FXML private Button clearButton;
     @FXML private CheckBox compareToCheckbox;
@@ -56,7 +55,7 @@ public class Controller implements Initializable {
     @FXML private Label firstChecksum;
     @FXML private Label secondChecksum;
 
-    // will have to remember the algorithm selection, input type selection, and checkbox selection
+    // application will have to remember the algorithm selection, input type selection, and checkbox selection
     private static String ALGORITHM_SELECTION = "MD5";
     // compare checksums when generate or paste button is pushed
     // do not compare when field is empty or when compareTo is disabled
@@ -92,11 +91,22 @@ public class Controller implements Initializable {
         secondChecksum.setDisable(true);
 
         inputTextField.requestFocus();
-
-//        firstChecksum.setStyle("-fx-background-radius: 8");
-//        secondChecksum.setStyle("-fx-background-radius: 8");
     }
 
+    @FXML protected void handleEnterKey(Event event) {
+        // If 'Enter' key is pressed while the inputTextField is focused, automatically generate the checksum
+        handleGenerateButtonAction(event);
+    }
+
+    @FXML protected void handleInputTypeSelection(Event event) {
+        if(inputType.getValue().toString().equals("Text")) {
+            inputTextField.setDisable(false);
+            openButton.setDisable(true);
+        } else if(inputType.getValue().toString().equals("File")){
+            inputTextField.setDisable(true);
+            openButton.setDisable(false);
+        }
+    }
 
     @FXML protected void handleOpenButtonAction(Event event) {
         // need to handle open dialog
@@ -112,13 +122,43 @@ public class Controller implements Initializable {
         // The wait text will remain displayed while the checksum is being generated
         firstChecksum.setText("                                  Generating...\n" +
                 "                          (This may take a while)");
-        ALGORITHM_SELECTION = algorithmType.getValue().toString();
-        firstChecksum.setText(getHashString(ALGORITHM_SELECTION.toLowerCase(), inputTextField.getText()));
+//        ALGORITHM_SELECTION = algorithmType.getValue().toString();
+        firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
 
         generateButton.setDisable(false);
 
         inputTextField.requestFocus();
         if(compareToCheckbox.isSelected()) { compareChecksums(); }
+    }
+
+    @FXML protected void handleCopyButtonAction(Event event) {
+        // Copy the checksum text into the user's system clipboard if it is not empty
+        if(!firstChecksum.getText().equals("")){
+            StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
+            Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboardCopy.setContents(checksumSelection, checksumSelection);
+            // print text: '(Copied to clipboard)'
+        }
+    }
+
+    @FXML protected void handleCompareToSelect(Event event) {
+        // If the compareTo checkbox is checked, enable the clear button, paste button, and second
+        // checksum field. If it is not checked, disable the items.
+        if(compareToCheckbox.isSelected()) {
+            clearButton.setDisable(false);
+            secondChecksum.setDisable(false);
+            pasteButton.setDisable(false);
+
+            // enable colors
+            compareChecksums();
+        } else {
+            pasteButton.setDisable(true);
+            clearButton.setDisable(true);
+            secondChecksum.setDisable(true);
+
+            // disable colors
+            clearHighlights();
+        }
     }
 
     @FXML protected void handlePasteButtonAction(Event event) {
@@ -152,7 +192,6 @@ public class Controller implements Initializable {
                 }
             }
         } catch (Exception e) {
-            // Clipboard could not be accessed
             secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
             clearHighlights();
 //            e.printStackTrace();
@@ -160,59 +199,13 @@ public class Controller implements Initializable {
         pasteButton.setDisable(false);
     }
 
-    @FXML protected void handleCopyButtonAction(Event event) {
-        // Copy the checksum text into the user's system clipboard if it is not empty
-        if(!firstChecksum.getText().equals("")){
-            StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
-            Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboardCopy.setContents(checksumSelection, checksumSelection);
-            // print text: '(Copied to clipboard)'
-        }
-    }
-
     @FXML protected void handleClearButtonAction(Event event) {
         // Set the text in the second checksum field to an empty string if it is not already empty
         if(secondChecksum.getText() != "") {
             secondChecksum.setText("");
-
             clearHighlights();
         }
     }
-
-    @FXML protected void handleInputTypeSelection(Event event) {
-        if(inputType.getValue().toString().equals("Text")) {
-            inputTextField.setDisable(false);
-            openButton.setDisable(true);
-        } else if(inputType.getValue().toString().equals("File")){
-            inputTextField.setDisable(true);
-            openButton.setDisable(false);
-        }
-    }
-
-    @FXML protected void handleCompareToSelect(Event event) {
-        // If the compareTo checkbox is checked, enable the clear button, paste button, and second
-        // checksum field. If it is not checked, disable the items.
-        if(compareToCheckbox.isSelected()) {
-            clearButton.setDisable(false);
-            secondChecksum.setDisable(false);
-            pasteButton.setDisable(false);
-
-            // enable colors
-            compareChecksums();
-        } else {
-            pasteButton.setDisable(true);
-            clearButton.setDisable(true);
-            secondChecksum.setDisable(true);
-
-            // disable colors
-            clearHighlights();
-        }
-    }
-
-    @FXML protected void handleEnterKey(Event event) {
-        handleGenerateButtonAction(event);
-    }
-
 
     /**
      * Private method that compares the first and second checksums. If they are the same,
@@ -233,6 +226,10 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * Private method that removes any highlighting on both checksum results
+     *
+     */
     private void clearHighlights() {
         firstChecksum.setStyle("-fx-background-color: #FFFFFF");
         secondChecksum.setStyle("-fx-background-color: #FFFFFF");
