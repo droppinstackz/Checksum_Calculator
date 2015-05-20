@@ -19,12 +19,18 @@
         * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
-<GridPane fx:controller="main.Controller" xmlns:fx="http://javafx.com/fxml">
+
+<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="375.0" minWidth="10.0" prefWidth="375.0" />
@@ -47,11 +53,11 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Button fx:id="openButton" text="Open" onMouseClicked="#handleOpenButtonAction" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <Button fx:id="openButton" onMouseClicked="#handleOpenButtonAction" prefHeight="28.0" prefWidth="86.0" text="Open" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                 <ChoiceBox fx:id="inputType" onMouseExited="#handleInputTypeSelection" prefHeight="25.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                <ChoiceBox fx:id="algorithmType"  prefHeight="25.0" prefWidth="100.0" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                <TextField fx:id="inputTextField"  prefHeight="28.0" prefWidth="321.0" GridPane.valignment="TOP" />
-                <Button fx:id="generateButton" text="Generate" onMouseClicked="#handleGenerateButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                <ChoiceBox fx:id="algorithmType" prefHeight="25.0" prefWidth="100.0" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <TextField fx:id="inputTextField" onAction="#handleEnterKey" prefHeight="28.0" prefWidth="321.0" GridPane.valignment="TOP" />
+                <Button fx:id="generateButton" mnemonicParsing="false" onMouseClicked="#handleGenerateButtonAction" prefHeight="28.0" prefWidth="86.0" text="Generate" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
             </children>
         </GridPane>
         <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -68,25 +74,43 @@
             <children>
                 <Separator prefWidth="200.0" />
                 <Label prefHeight="28.0" text="Result:" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                <CheckBox fx:id="compareToCheckbox" onMouseClicked="#handleCompareToSelect" mnemonicParsing="false" prefHeight="28.0" prefWidth="124.0" text="Compare To:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-                <Button fx:id="pasteButton" text="Paste" onMouseClicked="#handlePasteButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                <CheckBox fx:id="compareToCheckbox" mnemonicParsing="false" onMouseClicked="#handleCompareToSelect" prefHeight="28.0" prefWidth="124.0" text="Compare To:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                <Button fx:id="pasteButton" mnemonicParsing="false" onMouseClicked="#handlePasteButtonAction" prefHeight="28.0" prefWidth="86.0" text="Paste" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
                     <GridPane.margin>
                         <Insets right="-45.0" />
                     </GridPane.margin></Button>
-                <Label fx:id="firstChecksum" prefHeight="64.0" prefWidth="321.0" text="" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
-                    <font>
-                        <Font name="Quicksand-Bold" size="13.0" />
-                        <!--<Font name="DejaVu Sans Mono Bold" size="13.0" />-->
-                    </font>
-                </Label>
-                <Button fx:id="copyButton" text="Copy" onMouseClicked="#handleCopyButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                <Button fx:id="clearButton" text="Clear" onMouseClicked="#handleClearButtonAction" mnemonicParsing="false" prefHeight="28.0" prefWidth="86.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-                <Label fx:id="secondChecksum" prefHeight="64.0" prefWidth="321.0" text="" wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
-                    <font>
-                        <Font name="OpenSans-Bold" size="13.0" />
-                        <!--<Font name="DejaVu Sans Mono Bold" size="13.0" />-->
-                    </font>
-                </Label>
+                <Button fx:id="copyButton" mnemonicParsing="false" onMouseClicked="#handleCopyButtonAction" prefHeight="28.0" prefWidth="86.0" text="Copy" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+                <Button fx:id="clearButton" mnemonicParsing="false" onMouseClicked="#handleClearButtonAction" prefHeight="28.0" prefWidth="86.0" text="Clear" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+                <GridPane maxHeight="68.0" maxWidth="321.0" minHeight="68.0" minWidth="321.0" prefHeight="70.0" prefWidth="321.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label fx:id="firstChecksum" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                            <padding>
+                                <Insets top="2.0" bottom="2.0" left="4.0" right="4.0" />
+                            </padding>
+                        </Label>
+                    </children>
+                </GridPane>
+                <GridPane maxHeight="68.0" maxWidth="321.0" minHeight="68.0" minWidth="321.0" prefHeight="70.0" prefWidth="321.0" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label fx:id="secondChecksum" style="-fx-background-radius: 8;" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                            <padding>
+                                <Insets top="2.0" bottom="2.0" left="4.0" right="4.0" />
+                            </padding>
+                        </Label>
+                    </children>
+                </GridPane>
             </children>
         </GridPane>
     </children>

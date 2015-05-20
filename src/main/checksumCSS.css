@@ -91,7 +91,6 @@
 }
 
 
-/*
 .label {
-    -fx-background-color: #DDFFDD;
-}*/
+    -fx-background-radius: 8;
+}

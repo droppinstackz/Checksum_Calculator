@@ -3,6 +3,7 @@ import javafx.fxml.FXML;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -91,6 +92,9 @@ public class Controller implements Initializable {
         secondChecksum.setDisable(true);
 
         inputTextField.requestFocus();
+
+//        firstChecksum.setStyle("-fx-background-radius: 8");
+//        secondChecksum.setStyle("-fx-background-radius: 8");
     }
 
 
@@ -147,10 +151,11 @@ public class Controller implements Initializable {
                     compareChecksums();
                 }
             }
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             // Clipboard could not be accessed
             secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
-            e.printStackTrace();
+            clearHighlights();
+//            e.printStackTrace();
         }
         pasteButton.setDisable(false);
     }
@@ -169,17 +174,19 @@ public class Controller implements Initializable {
         // Set the text in the second checksum field to an empty string if it is not already empty
         if(secondChecksum.getText() != "") {
             secondChecksum.setText("");
+
+            clearHighlights();
         }
     }
 
     @FXML protected void handleInputTypeSelection(Event event) {
-//        if(inputType.getValue().toString().equals("Text")) {
-//            inputTextField.setDisable(false);
-//            openButton.setDisable(true);
-//        } else if(inputType.getValue().toString().equals("File")){
-//            inputTextField.setDisable(true);
-//            openButton.setDisable(false);
-//        }
+        if(inputType.getValue().toString().equals("Text")) {
+            inputTextField.setDisable(false);
+            openButton.setDisable(true);
+        } else if(inputType.getValue().toString().equals("File")){
+            inputTextField.setDisable(true);
+            openButton.setDisable(false);
+        }
     }
 
     @FXML protected void handleCompareToSelect(Event event) {
@@ -189,26 +196,46 @@ public class Controller implements Initializable {
             clearButton.setDisable(false);
             secondChecksum.setDisable(false);
             pasteButton.setDisable(false);
+
             // enable colors
+            compareChecksums();
         } else {
             pasteButton.setDisable(true);
             clearButton.setDisable(true);
             secondChecksum.setDisable(true);
+
             // disable colors
+            clearHighlights();
         }
     }
 
+    @FXML protected void handleEnterKey(Event event) {
+        handleGenerateButtonAction(event);
+    }
+
+
+    /**
+     * Private method that compares the first and second checksums. If they are the same,
+     * they are highlighted green, but if they are different, set the background to red.
+     */
     private void compareChecksums() {
         if (secondChecksum.getText() != "" && secondChecksum.getText().equals(firstChecksum.getText())) {
-//            secondChecksum.setText(secondChecksum.getText() + " --Good");
+            // set color to green
+            // the checksums are the same & there is non-null text to compare
             firstChecksum.setStyle("-fx-background-color: #E2FDE3");
             secondChecksum.setStyle("-fx-background-color: #E2FDE3");
 
         } else if(secondChecksum.getText() != "") {
-//            secondChecksum.setText(secondChecksum.getText() + " --Bad");
+            // set color to red
+            // the checksums are not the same & there is non-null text to compare
             firstChecksum.setStyle("-fx-background-color: #FFE4E4");
             secondChecksum.setStyle("-fx-background-color: #FFE4E4");
         }
+    }
+
+    private void clearHighlights() {
+        firstChecksum.setStyle("-fx-background-color: #FFFFFF");
+        secondChecksum.setStyle("-fx-background-color: #FFFFFF");
     }
 
 }
