@@ -124,7 +124,6 @@ public class Controller implements Initializable {
         // need to handle open dialog
         // need to find out how to create ellipses in middle of file path
 //        inputTextField.setText("C:\\Users\\imaginary\\file\\path\\to\\nowhere\\with\\no\\end\\in\\sight.txt");
-//        secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
     }
 
     @FXML protected void handleGenerateButtonAction() {
