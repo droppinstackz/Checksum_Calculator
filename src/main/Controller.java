@@ -120,6 +120,7 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handleOpenButtonAction() {
+//        new java.awt.FileDialog((java.awt.Frame) null).show();
         // need to handle open dialog
         // need to find out how to create ellipses in middle of file path
 //        inputTextField.setText("C:\\Users\\imaginary\\file\\path\\to\\nowhere\\with\\no\\end\\in\\sight.txt");

@@ -116,6 +116,11 @@
                         </Label>
                     </children>
                 </GridPane>
+                <Label maxHeight="28.0" minHeight="28.0" prefHeight="28.0" text="(Copied)" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                    <GridPane.margin>
+                        <Insets right="-45.0" />
+                    </GridPane.margin>
+                </Label>
             </children>
         </GridPane>
     </children>
