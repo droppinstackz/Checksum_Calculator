@@ -24,7 +24,7 @@
 .root {
     -fx-background-color: #ffffff;
 
-    /*-fx-font-family: 'Helvetica Neue';*/
+    -fx-font-family: 'Helvetica Neue';
     /*-fx-font-family: 'Vera';*/
     /*-fx-font-size: 14.0px;*/
 
@@ -36,13 +36,66 @@
     -fx-font-smoothing-type: gray;
 }
 
-.choice-box {
+/*.choice-box {
     -fx-background-color: #DFDBDF;
 }
-    /* To prevent focused elements from looking selected */
+    *//* To prevent focused elements from looking selected *//*
 .choice-box:focused{
     -fx-background-color: #DFDBDF;
 }
+.choice-box:hover{
+    -fx-background-color: derive(-flat-red, 60.0%);
+}*/
+
+    /* Button color when clicked */
+/*.choice-box:armed{
+    -fx-background-color: derive(-flat-red, -5.0%);
+}*/
+
+.combo-box {
+    -fx-background-color: #DFDBDF;
+}
+    /* To prevent focused elements from looking selected */
+/*.combo-box:focused{
+    -fx-background-color: #DFDBDF;
+}*/
+.combo-box:hover{
+    -fx-background-color: derive(-flat-red, 60.0%);
+}
+.combo-box:armed{
+    -fx-background-color: derive(-flat-red, -5.0%);
+}
+.combo-box-popup .list-cell: selected {
+    -fx-background-color: #DFDBDF;
+    -fx-text-fill: #000000;
+}
+.list-cell: hover {
+    -fx-background-color: derive(-flat-red, 60.0%);
+    -fx-text-fill: #000000;
+}
+
+
+
+.menu-button {
+    -fx-background-color: #DFDBDF;
+}
+    /* To prevent focused elements from looking selected */
+/*.menu-button:focused{
+    -fx-background-color: #DFDBDF;
+}*/
+.menu-button:hover{
+    -fx-background-color: derive(-flat-red, 60.0%);
+}
+.menu-button:armed{
+    -fx-background-color: derive(-flat-red, -5.0%);
+}
+.menu-item: hover {
+    -fx-background-color: derive(-flat-red, 60.0%);
+    -fx-text-fill: #000000;
+}
+
+
+
 
 
 /* Default look for all buttons */
@@ -55,9 +108,9 @@
     -fx-content-display: LEFT;
 }
     /* To prevent focused elements from looking selected */
-.button:focused{
+/*.button:focused{
     -fx-background-color: #DFDBDF;
-}
+}*/
     /* Button color when cursor is hovering */
 .button:hover{
     -fx-background-color: derive(-flat-red, 50.0%);
@@ -73,9 +126,9 @@
     -fx-background-color: #DFDBDF;
 }
     /* To prevent focused elements from looking selected */
-.check-box:determinate  .box:focused{
+/*.check-box:determinate  .box:focused{
     -fx-background-color: #DFDBDF;
-}
+}*/
     /* Checkbox color when cursor is hovering */
 .check-box:determinate:hover .box{
     -fx-background-color: derive(-flat-red, 50.0%);

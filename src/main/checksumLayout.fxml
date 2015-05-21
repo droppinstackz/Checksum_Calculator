@@ -54,10 +54,15 @@
             </rowConstraints>
             <children>
                 <Button fx:id="openButton" onMouseClicked="#handleOpenButtonAction" prefHeight="28.0" prefWidth="86.0" text="Open" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                <ChoiceBox fx:id="inputType" onMouseExited="#handleInputTypeSelection" prefHeight="25.0" prefWidth="86.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                <ChoiceBox fx:id="algorithmType" prefHeight="25.0" prefWidth="100.0" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                 <TextField fx:id="inputTextField" onAction="#handleEnterKey" prefHeight="28.0" prefWidth="321.0" GridPane.valignment="TOP" />
                 <Button fx:id="generateButton" mnemonicParsing="false" onMouseClicked="#handleGenerateButtonAction" prefHeight="28.0" prefWidth="86.0" text="Generate" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+                <MenuButton fx:id="inputType" maxHeight="25.0" maxWidth="86.0" minHeight="25.0" minWidth="86.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Text" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleTextInputTypeSelection" text="Text        " />
+                        <MenuItem mnemonicParsing="false" onAction="#handleFileInputTypeSelection" text="File        " />
+                    </items>
+                </MenuButton>
+                <ComboBox fx:id="algorithmType" maxHeight="25.0" maxWidth="105.0" minHeight="25.0" minWidth="100.0" prefHeight="25.0" prefWidth="100.0" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
             </children>
         </GridPane>
         <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -91,7 +96,7 @@
                     <children>
                         <Label fx:id="firstChecksum" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                             <padding>
-                                <Insets top="2.0" bottom="2.0" left="4.0" right="4.0" />
+                                <Insets bottom="2.0" left="4.0" right="4.0" top="2.0" />
                             </padding>
                         </Label>
                     </children>
@@ -106,7 +111,7 @@
                     <children>
                         <Label fx:id="secondChecksum" style="-fx-background-radius: 8;" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                             <padding>
-                                <Insets top="2.0" bottom="2.0" left="4.0" right="4.0" />
+                                <Insets bottom="2.0" left="4.0" right="4.0" top="2.0" />
                             </padding>
                         </Label>
                     </children>

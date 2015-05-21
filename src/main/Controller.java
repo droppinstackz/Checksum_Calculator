@@ -42,12 +42,12 @@ public class Controller implements Initializable {
 
     @FXML private TextField inputTextField;
 
-    @FXML private ChoiceBox algorithmType;
-    @FXML private ChoiceBox inputType;
+    @FXML private ComboBox algorithmType;
+    @FXML private MenuButton inputType;
     @FXML private Button openButton;
     @FXML private Button generateButton;
 
-//    @FXML private Button copyButton;
+    @FXML private Button copyButton;
     @FXML private Button pasteButton;
     @FXML private Button clearButton;
     @FXML private CheckBox compareToCheckbox;
@@ -79,11 +79,15 @@ public class Controller implements Initializable {
         algorithmType.getItems().add(3, "SHA-384");
         algorithmType.getItems().add(4, "SHA-512");
 
+
         // Initialize the inputType ChoiceBox
-        inputType.setItems(FXCollections.observableArrayList());
-        inputType.getItems().add(0, "Text");
-        inputType.setValue("Text");
-        inputType.getItems().add(1, "File");
+//        inputType.getItems().addAll(new MenuItem("Text"), new MenuItem("File"));
+        inputType.setText("Text");
+
+//        inputType.setItems(FXCollections.observableArrayList());
+//        inputType.getItems().add(0, "Text");
+//        inputType.setValue("Text");
+//        inputType.getItems().add(1, "File");
 
         // Set the checksum result fields blank and enable & disable the appropriate elements
         firstChecksum.setText("");
@@ -103,14 +107,16 @@ public class Controller implements Initializable {
         handleGenerateButtonAction();
     }
 
-    @FXML protected void handleInputTypeSelection() {
-        if(inputType.getValue().toString().equals("Text")) {
-            inputTextField.setDisable(false);
-            openButton.setDisable(true);
-        } else if(inputType.getValue().toString().equals("File")){
-            inputTextField.setDisable(true);
-            openButton.setDisable(false);
-        }
+    @FXML protected void handleTextInputTypeSelection() {
+        inputType.setText("Text");
+        inputTextField.setDisable(false);
+        openButton.setDisable(true);
+    }
+
+    @FXML protected void handleFileInputTypeSelection() {
+        inputType.setText("File");
+        inputTextField.setDisable(true);
+        openButton.setDisable(false);
     }
 
     @FXML protected void handleOpenButtonAction() {
@@ -121,18 +127,33 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handleGenerateButtonAction() {
-        // Prevent the user from flooding the checksum generator function
+        // Prevent the user from flooding the checksum generator function by locking critical buttons
         generateButton.setDisable(true);
+        algorithmType.setDisable(true);
+        copyButton.setDisable(true);
+        inputType.setDisable(true);
 
         // The wait text will remain displayed while the checksum is being generated
-        firstChecksum.setText("                                  Generating...\n" +
-                "                          (This may take a while)");
+        firstChecksum.setText("                             Generating...\n" +
+                              "                    (This may take a while)");
 
-        firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
+        if(inputType.getText().equals("Text")) {
+            firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
 
+            // Place cursor focus back to the inputTextfield
+            inputTextField.requestFocus();
+
+        } else if (inputType.getText().equals("File")) {
+//            firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
+
+        }
+
+        // Unlock critical buttons
         generateButton.setDisable(false);
+        algorithmType.setDisable(false);
+        copyButton.setDisable(false);
+        inputType.setDisable(false);
 
-        inputTextField.requestFocus();
         if(compareToCheckbox.isSelected()) { compareChecksums(); }
     }
 
@@ -181,9 +202,11 @@ public class Controller implements Initializable {
                     clipboardContents = (String)validContents.getTransferData(DataFlavor.stringFlavor);
                 } catch (UnsupportedFlavorException e) {
                     secondChecksum.setText("Error: string DataFlavor types are not supported.");
+                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
                     e.printStackTrace();
                 } catch (IOException e) {
                     secondChecksum.setText("Error: could not read the clipboard. It may be empty.");
+                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
                     e.printStackTrace();
                 }
 
@@ -191,6 +214,7 @@ public class Controller implements Initializable {
                 if (clipboardContents.length() > 128) {
                     secondChecksum.setText("String pasted is too long (Max length of 128 characters). " +
                             "Please paste in a valid checksum result.");
+                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
                 } else {
                     secondChecksum.setText(clipboardContents);
                     compareChecksums();

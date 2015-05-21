@@ -31,9 +31,10 @@ public class Main extends Application {
 //        Font.loadFont("file:resources/fonts/Vera.ttf", 14);
 
         Parent root = FXMLLoader.load(getClass().getResource("checksumLayout.fxml"));
-        primaryStage.resizableProperty().setValue(false);
+
         primaryStage.setTitle("Checksum Calculator");
         primaryStage.setScene(new Scene(root, 390, 455));
+        primaryStage.resizableProperty().setValue(false);
         primaryStage.show();
     }
 
