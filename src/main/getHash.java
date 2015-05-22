@@ -2,6 +2,8 @@ package main;
 
 import static org.apache.commons.codec.digest.DigestUtils.*;
 
+import java.io.*;
+
 /**
  * Generates a hash of a string or a file using the Apache Commons Codec.
  *
@@ -64,17 +66,28 @@ public class getHash {
      * Generates a hash of a file and returns the hash as a hex string
      *
      * @param hashType The type of hashing algorithm. Options are: "md5", "sha1", "sha256", "sha384", or "sha512"
-     * @param input The file to hash
+     * @param inputFile The file to hash
      * @return The hashed result as a hex string
      */
-    public static String getHashFile(String hashType, String input) { // need to change input
+    public static String getHashFile(String hashType, InputStream inputFile) {
 
-        if (!checkSize(input)){
-            // throw file too large exception
+        try {
+            if(hashType.equals("md5")) {
+                return md5Hex(inputFile);
+            } else if(hashType.equals("sha-1")) {
+                return sha1Hex(inputFile);
+            } else if(hashType.equals("sha-256")) {
+                return sha256Hex(inputFile);
+            } else if(hashType.equals("sha-384")) {
+                return sha384Hex(inputFile);
+            } else if(hashType.equals("sha-512")) {
+                return sha512Hex(inputFile);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } catch (IOException e) {
+            return "IO error";
         }
-
-
-        return "null";
     }
 
     /**

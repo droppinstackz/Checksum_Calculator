@@ -27,11 +27,10 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
 //        Font.loadFont("file:resources/fonts/Vera.ttf", 14);
 
         Parent root = FXMLLoader.load(getClass().getResource("checksumLayout.fxml"));
-
         primaryStage.setTitle("Checksum Calculator");
         primaryStage.setScene(new Scene(root, 390, 455));
         primaryStage.resizableProperty().setValue(false);

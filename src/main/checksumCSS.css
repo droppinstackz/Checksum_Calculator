@@ -139,8 +139,8 @@
 }
 
 
-/* Default look for all text fields */
-.text-area , .text-field {
+/* Default look for all text fields , white   , .text-field */
+.text-field {
     -fx-background-color: #DFDBDF, white;
     -fx-background-insets: 0.0, 0.2em;
     -fx-background-radius: 2.0;

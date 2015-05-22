@@ -1,21 +1,23 @@
-package main;// JavaFX Imports
+package main;
 import javafx.fxml.FXML;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-//import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 // Checksum getHash() imports
+import static main.getHash.getHashFile;
 import static main.getHash.getHashString;
 
 /**
@@ -54,19 +56,17 @@ public class Controller implements Initializable {
 
     @FXML private Label firstChecksum;
     @FXML private Label secondChecksum;
+    @FXML private Label copiedLabel;
 
+    private File inputFile = null;
+    private String userText = "";
 
     private static String CSS_BACKGROUND_GREEN = "-fx-background-color: #E2FDE3";
     private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
     private static String CSS_BACKGROUND_WHITE = "-fx-background-color: #FFFFFF";
 
-//    private static String ALGORITHM_SELECTION = "MD5";
-
     // application will have to remember the algorithm selection, input type selection, and checkbox selection
-    // compare checksums when generate or paste button is pushed
-    // do not compare when field is empty or when compareTo is disabled
     // add a 'Copied' label (in red) to the right of the copy button after it is pushed
-    // text from handleOpenButtonAction is not cleared when 'Text' entry is selected
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -79,15 +79,8 @@ public class Controller implements Initializable {
         algorithmType.getItems().add(3, "SHA-384");
         algorithmType.getItems().add(4, "SHA-512");
 
-
         // Initialize the inputType ChoiceBox
-//        inputType.getItems().addAll(new MenuItem("Text"), new MenuItem("File"));
         inputType.setText("Text");
-
-//        inputType.setItems(FXCollections.observableArrayList());
-//        inputType.getItems().add(0, "Text");
-//        inputType.setValue("Text");
-//        inputType.getItems().add(1, "File");
 
         // Set the checksum result fields blank and enable & disable the appropriate elements
         firstChecksum.setText("");
@@ -98,6 +91,7 @@ public class Controller implements Initializable {
         pasteButton.setDisable(true);
         clearButton.setDisable(true);
         secondChecksum.setDisable(true);
+        copiedLabel.setVisible(false);
 
         inputTextField.requestFocus();
     }
@@ -109,51 +103,87 @@ public class Controller implements Initializable {
 
     @FXML protected void handleTextInputTypeSelection() {
         inputType.setText("Text");
+        inputTextField.setText(userText);
         inputTextField.setDisable(false);
         openButton.setDisable(true);
     }
 
     @FXML protected void handleFileInputTypeSelection() {
         inputType.setText("File");
+        userText = inputTextField.getText();
         inputTextField.setDisable(true);
         openButton.setDisable(false);
     }
 
     @FXML protected void handleOpenButtonAction() {
-//        new java.awt.FileDialog((java.awt.Frame) null).show();
-        // need to handle open dialog
-        // need to find out how to create ellipses in middle of file path
-//        inputTextField.setText("C:\\Users\\imaginary\\file\\path\\to\\nowhere\\with\\no\\end\\in\\sight.txt");
+
+        // Open the file chooser
+        try {
+            Stage stage = (Stage) generateButton.getScene().getWindow();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open File");
+            inputFile = fileChooser.showOpenDialog(stage);
+
+            if(inputFile != null) {  // Display file path in inputTextField
+                String filePath = inputFile.getAbsolutePath();
+                int stringLength = filePath.length();
+
+                // place ellipses in the middle of the file path if it is too long
+                if (stringLength > 50) {
+                    filePath = filePath.substring(0, 11) + "... " + filePath.substring(stringLength - 30);
+                }
+                inputTextField.setText(filePath);
+            }
+        } catch (Exception e) {
+            firstChecksum.setText("The file could not be opened");
+            firstChecksum.setStyle(CSS_BACKGROUND_RED);
+        }
+
     }
 
     @FXML protected void handleGenerateButtonAction() {
-        // Prevent the user from flooding the checksum generator function by locking critical buttons
-        generateButton.setDisable(true);
-        algorithmType.setDisable(true);
-        copyButton.setDisable(true);
-        inputType.setDisable(true);
-
-        // The wait text will remain displayed while the checksum is being generated
-        firstChecksum.setText("                             Generating...\n" +
-                              "                    (This may take a while)");
+        lockButtons();
 
         if(inputType.getText().equals("Text")) {
             firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
+            inputTextField.requestFocus(); // Place cursor focus back to the inputTextfield
 
-            // Place cursor focus back to the inputTextfield
-            inputTextField.requestFocus();
+        } else if (inputType.getText().equals("File") && (inputFile != null)) {
+            String outputResult = "";
+            InputStream fileStream = null;
 
-        } else if (inputType.getText().equals("File")) {
-//            firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
+            try {
+                fileStream = new FileInputStream(inputFile);
+                outputResult = getHashFile(algorithmType.getValue().toString().toLowerCase(), fileStream);
 
+                System.out.println("Total file size (bytes): " + fileStream.available());
+
+            } catch (FileNotFoundException e) {
+                outputResult = "The file could not be found";
+                firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                e.printStackTrace();
+
+            } catch (IOException ioEX1) {
+                outputResult = "The file could not be read";
+                firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                ioEX1.printStackTrace();
+
+            } finally {
+                try {   // Close file
+                    if(fileStream != null) {
+                        fileStream.close();
+                    }
+                } catch (IOException ioEX2) {
+                    outputResult = "The file could not be closed";
+                    firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                    ioEX2.printStackTrace();
+                }
+
+            }
+            firstChecksum.setText(outputResult);
         }
 
-        // Unlock critical buttons
-        generateButton.setDisable(false);
-        algorithmType.setDisable(false);
-        copyButton.setDisable(false);
-        inputType.setDisable(false);
-
+        unlockButtons();
         if(compareToCheckbox.isSelected()) { compareChecksums(); }
     }
 
@@ -163,7 +193,16 @@ public class Controller implements Initializable {
             StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
             Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboardCopy.setContents(checksumSelection, checksumSelection);
-            // print text: '(Copied to clipboard)'
+
+            // print text: '(Copied)'
+//            copiedLabel.setVisible(true);
+//            try {
+//                pause(3);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            copiedLabel.setVisible(false);
+
         }
     }
 
@@ -217,13 +256,12 @@ public class Controller implements Initializable {
                     secondChecksum.setStyle(CSS_BACKGROUND_RED);
                 } else {
                     secondChecksum.setText(clipboardContents);
-                    compareChecksums();
+                    if(!firstChecksum.getText().equals("")) { compareChecksums(); }
                 }
             }
         } catch (Exception e) {
             secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
             secondChecksum.setStyle(CSS_BACKGROUND_RED);
-//            e.printStackTrace();
         }
         pasteButton.setDisable(false);
     }
@@ -263,4 +301,21 @@ public class Controller implements Initializable {
         secondChecksum.setStyle(CSS_BACKGROUND_WHITE);
     }
 
+    /**
+     * Prevent the user from flooding the checksum generator function by locking critical buttons
+     */
+    private void lockButtons() {
+        algorithmType.setDisable(true);
+        inputType.setDisable(true);
+        generateButton.setDisable(true);
+    }
+
+    /**
+     * Unlock critical buttons
+     */
+    private void unlockButtons() {
+        algorithmType.setDisable(false);
+        inputType.setDisable(false);
+        generateButton.setDisable(false);
+    }
 }

@@ -19,16 +19,10 @@
         * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<?import java.net.URL?>
 
 <GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
     <columnConstraints>
@@ -116,7 +110,7 @@
                         </Label>
                     </children>
                 </GridPane>
-                <Label maxHeight="28.0" minHeight="28.0" prefHeight="28.0" text="(Copied)" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                <Label fx:id="copiedLabel" maxHeight="28.0" minHeight="28.0" prefHeight="28.0" text="(Copied)" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                     <GridPane.margin>
                         <Insets right="-45.0" />
                     </GridPane.margin>
