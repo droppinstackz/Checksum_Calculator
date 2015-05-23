@@ -154,9 +154,10 @@ public class Controller implements Initializable {
 
             try {
                 fileStream = new FileInputStream(inputFile);
+                System.out.println("Total file size (bytes): " + fileStream.available());
                 outputResult = getHashFile(algorithmType.getValue().toString().toLowerCase(), fileStream);
 
-                System.out.println("Total file size (bytes): " + fileStream.available());
+
 
             } catch (FileNotFoundException e) {
                 outputResult = "The file could not be found";
