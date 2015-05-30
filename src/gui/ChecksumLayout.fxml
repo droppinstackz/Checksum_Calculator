@@ -24,7 +24,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="375.0" minWidth="10.0" prefWidth="375.0" />
@@ -120,7 +120,7 @@
     </children>
 
     <stylesheets>
-        <URL value="@checksumCSS.css" />
+        <URL value="@ChecksumCSS.css" />
     </stylesheets>
 
 </GridPane>

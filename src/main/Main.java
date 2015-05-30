@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -30,7 +31,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 //        Font.loadFont("file:resources/fonts/Vera.ttf", 14);
 
-        Parent root = FXMLLoader.load(getClass().getResource("checksumLayout.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("../gui/ChecksumLayout.fxml"));
+        primaryStage.getIcons().add(new Image("file:resources/icon.png"));
         primaryStage.setTitle("Checksum Calculator");
         primaryStage.setScene(new Scene(root, 390, 455));
         primaryStage.resizableProperty().setValue(false);

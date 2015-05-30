@@ -1,4 +1,6 @@
-package main;
+package gui;
+import actions.GetHash;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import java.awt.*;
@@ -17,8 +19,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 // Checksum getHash() imports
-import static main.getHash.getHashFile;
-import static main.getHash.getHashString;
+//import static actions.getHash.getHashFile;
+//import static actions.getHash.getHashString;
 
 /**
  * Controller for the Checksum Calculator GUI
@@ -67,6 +69,7 @@ public class Controller implements Initializable {
 
     // application will have to remember the algorithm selection, input type selection, and checkbox selection
     // add a 'Copied' label (in red) to the right of the copy button after it is pushed
+    // add a 'Stop' button to stop the checksum calculation
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -102,6 +105,7 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handleTextInputTypeSelection() {
+        // When the user selects the "Text" option from the dropdown
         inputType.setText("Text");
         inputTextField.setText(userText);
         inputTextField.setDisable(false);
@@ -109,6 +113,7 @@ public class Controller implements Initializable {
     }
 
     @FXML protected void handleFileInputTypeSelection() {
+        // When the user selects the "File" option from the dropdown
         inputType.setText("File");
         userText = inputTextField.getText();
         inputTextField.setDisable(true);
@@ -135,57 +140,38 @@ public class Controller implements Initializable {
                 inputTextField.setText(filePath);
             }
         } catch (Exception e) {
-            firstChecksum.setText("The file could not be opened");
-            firstChecksum.setStyle(CSS_BACKGROUND_RED);
+            displayError("The file could not be opened", firstChecksum);
         }
-
     }
 
     @FXML protected void handleGenerateButtonAction() {
         lockButtons();
 
+        // Starts the threads that will generate the checksums
         if(inputType.getText().equals("Text")) {
-            firstChecksum.setText(getHashString(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText()));
-            inputTextField.requestFocus(); // Place cursor focus back to the inputTextfield
+            inputTextField.setDisable(true);
+            Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this));
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
-            String outputResult = "";
             InputStream fileStream = null;
 
             try {
                 fileStream = new FileInputStream(inputFile);
-                System.out.println("Total file size (bytes): " + fileStream.available());
-                outputResult = getHashFile(algorithmType.getValue().toString().toLowerCase(), fileStream);
 
+                // if over a certain size, display the size and indeterminate progress bar
+                setWaitText("(" + fileStream.available() + " Bytes)");
 
+                Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this));
 
             } catch (FileNotFoundException e) {
-                outputResult = "The file could not be found";
-                firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                displayError("The file could not be found", firstChecksum);
                 e.printStackTrace();
 
             } catch (IOException ioEX1) {
-                outputResult = "The file could not be read";
-                firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                displayError("The file could not be read", firstChecksum);
                 ioEX1.printStackTrace();
-
-            } finally {
-                try {   // Close file
-                    if(fileStream != null) {
-                        fileStream.close();
-                    }
-                } catch (IOException ioEX2) {
-                    outputResult = "The file could not be closed";
-                    firstChecksum.setStyle(CSS_BACKGROUND_RED);
-                    ioEX2.printStackTrace();
-                }
-
             }
-            firstChecksum.setText(outputResult);
         }
-
-        unlockButtons();
-        if(compareToCheckbox.isSelected()) { compareChecksums(); }
     }
 
     @FXML protected void handleCopyButtonAction() {
@@ -241,28 +227,24 @@ public class Controller implements Initializable {
                 try {
                     clipboardContents = (String)validContents.getTransferData(DataFlavor.stringFlavor);
                 } catch (UnsupportedFlavorException e) {
-                    secondChecksum.setText("Error: string DataFlavor types are not supported.");
-                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
+                    displayError("Error: string DataFlavor types are not supported.", secondChecksum);
                     e.printStackTrace();
                 } catch (IOException e) {
-                    secondChecksum.setText("Error: could not read the clipboard. It may be empty.");
-                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
+                    displayError("Error: could not read the clipboard. It may be empty.", secondChecksum);
                     e.printStackTrace();
                 }
 
                 // If the length is longer than the longest checksum result, print error message
                 if (clipboardContents.length() > 128) {
-                    secondChecksum.setText("String pasted is too long (Max length of 128 characters). " +
-                            "Please paste in a valid checksum result.");
-                    secondChecksum.setStyle(CSS_BACKGROUND_RED);
+                    displayError("String pasted is too long (Max length of 128 characters). " +
+                            "Please paste in a valid checksum result.", secondChecksum);
                 } else {
                     secondChecksum.setText(clipboardContents);
-                    if(!firstChecksum.getText().equals("")) { compareChecksums(); }
+                    compareChecksums();
                 }
             }
         } catch (Exception e) {
-            secondChecksum.setText("The clipboard could not be accessed. Another application may currently be accessing it.");
-            secondChecksum.setStyle(CSS_BACKGROUND_RED);
+            displayError("The clipboard could not be accessed. Another application may currently be accessing it.", secondChecksum);
         }
         pasteButton.setDisable(false);
     }
@@ -275,18 +257,41 @@ public class Controller implements Initializable {
         }
     }
 
+
+    public void returnChecksum(String result, boolean failure) {
+//        setWaitText(" ", Controller.this);
+
+        if(failure){
+            displayError(result, firstChecksum);
+
+        } else {
+            firstChecksum.setText(result);
+            compareChecksums();
+        }
+
+        unlockButtons();
+
+        // Place cursor focus back to the inputTextfield
+        if(inputType.getText().equals("Text")) { inputTextField.setDisable(false); inputTextField.requestFocus(); }
+    }
+
+
+    public void setWaitText(String fileSize) {
+
+    }
+
     /**
      * Private method that compares the first and second checksums. If they are the same,
      * they are highlighted green, but if they are different, set the background to red.
      */
     private void compareChecksums() {
-        if (!secondChecksum.getText().equals("") && secondChecksum.getText().equals(firstChecksum.getText())) {
+        if ((!secondChecksum.getText().equals("")) && secondChecksum.getText().equals(firstChecksum.getText()) && compareToCheckbox.isSelected()) {
             // set color to green
             // the checksums are the same & there is non-null text to compare
             firstChecksum.setStyle(CSS_BACKGROUND_GREEN);
             secondChecksum.setStyle(CSS_BACKGROUND_GREEN);
 
-        } else if(!secondChecksum.getText().equals("")) {
+        } else if((!secondChecksum.getText().equals("")) && compareToCheckbox.isSelected()) {
             // set color to red
             // the checksums are not the same & there is non-null text to compare
             firstChecksum.setStyle(CSS_BACKGROUND_RED);
@@ -309,6 +314,7 @@ public class Controller implements Initializable {
         algorithmType.setDisable(true);
         inputType.setDisable(true);
         generateButton.setDisable(true);
+        copyButton.setDisable(true);
     }
 
     /**
@@ -318,5 +324,17 @@ public class Controller implements Initializable {
         algorithmType.setDisable(false);
         inputType.setDisable(false);
         generateButton.setDisable(false);
+        copyButton.setDisable(false);
+    }
+
+    /**
+     * Displays an error in the given label and sets its highlight to red
+     *
+     * @param errorMessage An error message to display
+     * @param displayLabel The label where the error message will be displayed
+     */
+    public void displayError(String errorMessage, Label displayLabel){
+        displayLabel.setText(errorMessage);
+        displayLabel.setStyle(CSS_BACKGROUND_RED);
     }
 }
