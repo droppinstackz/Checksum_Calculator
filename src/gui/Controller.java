@@ -1,4 +1,5 @@
 package gui;
+import actions.CopiedStatusRunner;
 import actions.GetHash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -58,7 +59,8 @@ public class Controller implements Initializable {
 
     @FXML private Label firstChecksum;
     @FXML private Label secondChecksum;
-    @FXML private Label copiedLabel;
+    @FXML public Label copiedLabel;
+    @FXML private ProgressBar progressBar;
 
     private File inputFile = null;
     private String userText = "";
@@ -94,7 +96,14 @@ public class Controller implements Initializable {
         pasteButton.setDisable(true);
         clearButton.setDisable(true);
         secondChecksum.setDisable(true);
-        copiedLabel.setVisible(false);
+
+        copiedLabel.setText("");
+
+        progressBar.setDisable(true);
+        progressBar.setVisible(false);
+        progressBar.setProgress(-1);
+//        progressBar.setP
+
 
         inputTextField.requestFocus();
     }
@@ -147,10 +156,18 @@ public class Controller implements Initializable {
     @FXML protected void handleGenerateButtonAction() {
         lockButtons();
 
+        Platform.runLater(() -> progressBar.setDisable (false));
+        Platform.runLater(() -> progressBar.setVisible(true));
+//        progressBar.setDisable (false);
+
+
         // Starts the threads that will generate the checksums
         if(inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
-            Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this));
+
+            GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
+            new Thread(ght).start();
+//            Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this));
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
             InputStream fileStream = null;
@@ -159,9 +176,11 @@ public class Controller implements Initializable {
                 fileStream = new FileInputStream(inputFile);
 
                 // if over a certain size, display the size and indeterminate progress bar
-                setWaitText("(" + fileStream.available() + " Bytes)");
+//                setWaitText("(" + fileStream.available() + " Bytes)");
 
-                Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this));
+                GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
+                new Thread(ght).start();
+//                Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this));
 
             } catch (FileNotFoundException e) {
                 displayError("The file could not be found", firstChecksum);
@@ -181,6 +200,8 @@ public class Controller implements Initializable {
             Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboardCopy.setContents(checksumSelection, checksumSelection);
 
+            Platform.runLater(new CopiedStatusRunner(copiedLabel));
+
             // print text: '(Copied)'
 //            copiedLabel.setVisible(true);
 //            try {
@@ -188,7 +209,7 @@ public class Controller implements Initializable {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            copiedLabel.setVisible(false);
+//            copiedLabel.setVisible(false);
 
         }
     }
@@ -261,18 +282,24 @@ public class Controller implements Initializable {
     public void returnChecksum(String result, boolean failure) {
 //        setWaitText(" ", Controller.this);
 
+        Platform.runLater(() -> progressBar.setDisable(true));
+        Platform.runLater(() -> progressBar.setVisible(false));
+
         if(failure){
-            displayError(result, firstChecksum);
+            Platform.runLater(() -> displayError(result, firstChecksum));
 
         } else {
-            firstChecksum.setText(result);
-            compareChecksums();
+            Platform.runLater(() -> firstChecksum.setText(result));
+            Platform.runLater(() -> compareChecksums());
         }
 
-        unlockButtons();
+        Platform.runLater(() -> unlockButtons());
 
         // Place cursor focus back to the inputTextfield
-        if(inputType.getText().equals("Text")) { inputTextField.setDisable(false); inputTextField.requestFocus(); }
+        if(inputType.getText().equals("Text")) {
+            Platform.runLater(() -> inputTextField.setDisable(false));
+            Platform.runLater(() -> inputTextField.requestFocus());
+        }
     }
 
 

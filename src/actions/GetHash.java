@@ -1,6 +1,7 @@
 package actions;
 
 import gui.Controller;
+import javafx.application.Platform;
 
 import static org.apache.commons.codec.digest.DigestUtils.*;
 
@@ -112,8 +113,8 @@ public class GetHash implements Runnable {
                 } catch (IOException e) {
                     HEX_RESULT = "IO error";
                 }
-
-                mainFXMLController.returnChecksum(HEX_RESULT, false); // return the result
+                mainFXMLController.returnChecksum(HEX_RESULT, false);
+//                Platform.runLater(() -> mainFXMLController.returnChecksum(HEX_RESULT, false)); // return the result
             }
 
         } catch (Exception e) {

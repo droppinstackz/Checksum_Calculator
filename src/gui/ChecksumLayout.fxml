@@ -19,6 +19,7 @@
         * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<?import java.lang.*?>
 <?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -88,11 +89,16 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label fx:id="firstChecksum" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                        <Label fx:id="firstChecksum" text="           Size: 12 GB (This may take a while)" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                             <padding>
                                 <Insets bottom="2.0" left="4.0" right="4.0" top="2.0" />
                             </padding>
                         </Label>
+                        <ProgressBar fx:id="progressBar" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets top="25.0" />
+                            </GridPane.margin>
+                        </ProgressBar>
                     </children>
                 </GridPane>
                 <GridPane maxHeight="68.0" maxWidth="327.0" minHeight="68.0" minWidth="327.0" prefHeight="68.0" prefWidth="327.0" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">

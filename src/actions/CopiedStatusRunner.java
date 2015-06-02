@@ -1,5 +1,8 @@
 package actions;
 
+import gui.Controller;
+import javafx.scene.control.Label;
+
 /**
  * Generates a hash of a string or a file using the Apache Commons Codec.
  *
@@ -21,5 +24,26 @@ package actions;
  * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class CopiedStatusRunner {
+public class CopiedStatusRunner implements Runnable {
+
+    Label copiedLabel;
+//    private Controller mainFXMLController;
+
+    public CopiedStatusRunner (Label copiedLabel) {
+        this.copiedLabel = copiedLabel;
+    }
+
+    @Override
+    public void run() {
+        try {
+//            copiedLabel.setText("(Copied)");
+//            mainFXMLController.copiedLabel.setStyle("-fx-background-color: #FFE4E4");
+            copiedLabel.setText("(Copied)");
+            Thread.sleep(3000);
+            copiedLabel.setText("");
+
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
