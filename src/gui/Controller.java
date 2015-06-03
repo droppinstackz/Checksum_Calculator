@@ -19,10 +19,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-// Checksum getHash() imports
-//import static actions.getHash.getHashFile;
-//import static actions.getHash.getHashString;
-
 /**
  * Controller for the Checksum Calculator GUI
  *
@@ -46,7 +42,6 @@ import javafx.stage.Stage;
 public class Controller implements Initializable {
 
     @FXML private TextField inputTextField;
-
     @FXML private ComboBox algorithmType;
     @FXML private MenuButton inputType;
     @FXML private Button openButton;
@@ -101,35 +96,46 @@ public class Controller implements Initializable {
 
         progressBar.setDisable(true);
         progressBar.setVisible(false);
-        progressBar.setProgress(-1);
-//        progressBar.setP
+        progressBar.setProgress(0);
 
 
         inputTextField.requestFocus();
     }
 
-    @FXML protected void handleEnterKey() {
+    @FXML
+    protected void handleEnterKey() {
         // If 'Enter' key is pressed while the inputTextField is focused, automatically generate the checksum
         handleGenerateButtonAction();
     }
 
-    @FXML protected void handleTextInputTypeSelection() {
+    @FXML
+    protected void handleTextInputTypeSelection() {
         // When the user selects the "Text" option from the dropdown
-        inputType.setText("Text");
-        inputTextField.setText(userText);
-        inputTextField.setDisable(false);
-        openButton.setDisable(true);
+        Platform.runLater(() -> {
+            inputType.setText("Text");
+            inputTextField.setText(userText);
+            inputTextField.setDisable(false);
+            openButton.setDisable(true);
+            generateButton.setDisable(false);
+            inputTextField.requestFocus();
+        });
     }
 
-    @FXML protected void handleFileInputTypeSelection() {
+    @FXML
+    protected void handleFileInputTypeSelection() {
         // When the user selects the "File" option from the dropdown
-        inputType.setText("File");
-        userText = inputTextField.getText();
-        inputTextField.setDisable(true);
-        openButton.setDisable(false);
+        Platform.runLater(() -> {
+            inputType.setText("File");
+            userText = inputTextField.getText();
+            inputTextField.setText("");
+            inputTextField.setDisable(true);
+            openButton.setDisable(false);
+            generateButton.setDisable(true);
+        });
     }
 
-    @FXML protected void handleOpenButtonAction() {
+    @FXML
+    protected void handleOpenButtonAction() {
 
         // Open the file chooser
         try {
@@ -138,7 +144,7 @@ public class Controller implements Initializable {
             fileChooser.setTitle("Open File");
             inputFile = fileChooser.showOpenDialog(stage);
 
-            if(inputFile != null) {  // Display file path in inputTextField
+            if (inputFile != null) {  // Display file path in inputTextField
                 String filePath = inputFile.getAbsolutePath();
                 int stringLength = filePath.length();
 
@@ -151,23 +157,23 @@ public class Controller implements Initializable {
         } catch (Exception e) {
             displayError("The file could not be opened", firstChecksum);
         }
+        generateButton.setDisable(false);
     }
 
-    @FXML protected void handleGenerateButtonAction() {
+    @FXML
+    protected void handleGenerateButtonAction() {
         lockButtons();
 
-        Platform.runLater(() -> progressBar.setDisable (false));
+        Platform.runLater(() -> progressBar.setDisable(false));
         Platform.runLater(() -> progressBar.setVisible(true));
-//        progressBar.setDisable (false);
+        Platform.runLater(() -> progressBar.setProgress(-1));
 
 
         // Starts the threads that will generate the checksums
-        if(inputType.getText().equals("Text")) {
+        if (inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
-
             GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
             new Thread(ght).start();
-//            Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this));
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
             InputStream fileStream = null;
@@ -180,7 +186,6 @@ public class Controller implements Initializable {
 
                 GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
                 new Thread(ght).start();
-//                Platform.runLater(new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this));
 
             } catch (FileNotFoundException e) {
                 displayError("The file could not be found", firstChecksum);
@@ -191,91 +196,96 @@ public class Controller implements Initializable {
                 ioEX1.printStackTrace();
             }
         }
+
+
     }
 
-    @FXML protected void handleCopyButtonAction() {
+    @FXML
+    protected void handleCopyButtonAction() {
         // Copy the checksum text into the user's system clipboard if it is not empty
-        if(!firstChecksum.getText().equals("")){
-            StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
-            Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboardCopy.setContents(checksumSelection, checksumSelection);
+        Platform.runLater(() -> {
+            if (!firstChecksum.getText().equals("")) {
+                StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
+                Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboardCopy.setContents(checksumSelection, checksumSelection);
 
-            Platform.runLater(new CopiedStatusRunner(copiedLabel));
-
-            // print text: '(Copied)'
-//            copiedLabel.setVisible(true);
-//            try {
-//                pause(3);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            copiedLabel.setVisible(false);
-
-        }
+                CopiedStatusRunner ctr = new CopiedStatusRunner(copiedLabel);
+                new Thread(ctr).start();
+            }
+        });
     }
 
-    @FXML protected void handleCompareToSelect() {
+    @FXML
+    protected void handleCompareToSelect() {
         // If the compareTo checkbox is checked, enable the clear button, paste button, and second
         // checksum field. If it is not checked, disable the items.
-        if(compareToCheckbox.isSelected()) {
-            clearButton.setDisable(false);
-            secondChecksum.setDisable(false);
-            pasteButton.setDisable(false);
+        Platform.runLater(() -> {
+            if (compareToCheckbox.isSelected()) {
+                clearButton.setDisable(false);
+                secondChecksum.setDisable(false);
+                pasteButton.setDisable(false);
 
-            // enable colors
-            compareChecksums();
-        } else {
-            pasteButton.setDisable(true);
-            clearButton.setDisable(true);
-            secondChecksum.setDisable(true);
+                // enable colors
+                compareChecksums();
+            } else {
+                pasteButton.setDisable(true);
+                clearButton.setDisable(true);
+                secondChecksum.setDisable(true);
 
-            // disable colors
-            clearHighlights();
-        }
-    }
-
-    @FXML protected void handlePasteButtonAction() {
-        pasteButton.setDisable(true);
-        try {
-            // Retrieve contents from the clipboard
-            Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
-            Transferable validContents = clipboardPaste.getContents(null);
-
-            // If the contents are not null and are of type string
-            if((validContents != null) && validContents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                // Try to retrieve the string contents
-                String clipboardContents = "";
-                try {
-                    clipboardContents = (String)validContents.getTransferData(DataFlavor.stringFlavor);
-                } catch (UnsupportedFlavorException e) {
-                    displayError("Error: string DataFlavor types are not supported.", secondChecksum);
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    displayError("Error: could not read the clipboard. It may be empty.", secondChecksum);
-                    e.printStackTrace();
-                }
-
-                // If the length is longer than the longest checksum result, print error message
-                if (clipboardContents.length() > 128) {
-                    displayError("String pasted is too long (Max length of 128 characters). " +
-                            "Please paste in a valid checksum result.", secondChecksum);
-                } else {
-                    secondChecksum.setText(clipboardContents);
-                    compareChecksums();
-                }
+                // disable colors
+                clearHighlights();
             }
-        } catch (Exception e) {
-            displayError("The clipboard could not be accessed. Another application may currently be accessing it.", secondChecksum);
-        }
-        pasteButton.setDisable(false);
+        });
     }
 
-    @FXML protected void handleClearButtonAction() {
+    @FXML
+    protected void handlePasteButtonAction() {
+        Platform.runLater(() -> {
+            pasteButton.setDisable(true);
+            try {
+                // Retrieve contents from the clipboard
+                Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
+                Transferable validContents = clipboardPaste.getContents(null);
+
+                // If the contents are not null and are of type string
+                if ((validContents != null) && validContents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    // Try to retrieve the string contents
+                    String clipboardContents = "";
+                    try {
+                        clipboardContents = (String) validContents.getTransferData(DataFlavor.stringFlavor);
+                    } catch (UnsupportedFlavorException e) {
+                        displayError("Error: string DataFlavor types are not supported.", secondChecksum);
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        displayError("Error: could not read the clipboard. It may be empty.", secondChecksum);
+                        e.printStackTrace();
+                    }
+
+                    // If the length is longer than the longest checksum result, print error message
+                    if (clipboardContents.length() > 128) {
+                        displayError("String pasted is too long  (Max length of 128 characters). " +
+                                "Please paste in a valid checksum result.", secondChecksum);
+                    } else {
+                        secondChecksum.setText(clipboardContents);
+                        compareChecksums();
+                    }
+                }
+            } catch (Exception e) {
+                displayError("The clipboard could not be accessed. Another application may currently be accessing it.", secondChecksum);
+            }
+            pasteButton.setDisable(false);
+        });
+    }
+
+    @FXML
+    protected void handleClearButtonAction() {
         // Set the text in the second checksum field to an empty string if it is not already empty
-        if(!secondChecksum.getText().equals("")) {
-            secondChecksum.setText("");
-            clearHighlights();
-        }
+        Platform.runLater(() -> {
+            if (!secondChecksum.getText().equals("")) {
+                secondChecksum.setText("");
+                clearHighlights();
+            }
+        });
     }
 
 
@@ -284,8 +294,9 @@ public class Controller implements Initializable {
 
         Platform.runLater(() -> progressBar.setDisable(true));
         Platform.runLater(() -> progressBar.setVisible(false));
+        Platform.runLater(() -> progressBar.setProgress(0));
 
-        if(failure){
+        if (failure) {
             Platform.runLater(() -> displayError(result, firstChecksum));
 
         } else {
@@ -296,7 +307,7 @@ public class Controller implements Initializable {
         Platform.runLater(() -> unlockButtons());
 
         // Place cursor focus back to the inputTextfield
-        if(inputType.getText().equals("Text")) {
+        if (inputType.getText().equals("Text")) {
             Platform.runLater(() -> inputTextField.setDisable(false));
             Platform.runLater(() -> inputTextField.requestFocus());
         }
@@ -312,17 +323,21 @@ public class Controller implements Initializable {
      * they are highlighted green, but if they are different, set the background to red.
      */
     private void compareChecksums() {
-        if ((!secondChecksum.getText().equals("")) && secondChecksum.getText().equals(firstChecksum.getText()) && compareToCheckbox.isSelected()) {
+        if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) && secondChecksum.getText().equals(firstChecksum.getText()) && compareToCheckbox.isSelected()) {
             // set color to green
             // the checksums are the same & there is non-null text to compare
-            firstChecksum.setStyle(CSS_BACKGROUND_GREEN);
-            secondChecksum.setStyle(CSS_BACKGROUND_GREEN);
+            Platform.runLater(() -> {
+                firstChecksum.setStyle(CSS_BACKGROUND_GREEN);
+                secondChecksum.setStyle(CSS_BACKGROUND_GREEN);
+            });
 
-        } else if((!secondChecksum.getText().equals("")) && compareToCheckbox.isSelected()) {
+            } else if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) && compareToCheckbox.isSelected()) {
             // set color to red
             // the checksums are not the same & there is non-null text to compare
-            firstChecksum.setStyle(CSS_BACKGROUND_RED);
-            secondChecksum.setStyle(CSS_BACKGROUND_RED);
+            Platform.runLater(() -> {
+                firstChecksum.setStyle(CSS_BACKGROUND_RED);
+                secondChecksum.setStyle(CSS_BACKGROUND_RED);
+            });
         }
     }
 
@@ -330,28 +345,34 @@ public class Controller implements Initializable {
      * Private method that removes any highlighting on both checksum results
      */
     private void clearHighlights() {
-        firstChecksum.setStyle(CSS_BACKGROUND_WHITE);
-        secondChecksum.setStyle(CSS_BACKGROUND_WHITE);
+        Platform.runLater(() -> {
+            firstChecksum.setStyle(CSS_BACKGROUND_WHITE);
+            secondChecksum.setStyle(CSS_BACKGROUND_WHITE);
+        });
     }
 
     /**
      * Prevent the user from flooding the checksum generator function by locking critical buttons
      */
     private void lockButtons() {
-        algorithmType.setDisable(true);
-        inputType.setDisable(true);
-        generateButton.setDisable(true);
-        copyButton.setDisable(true);
+        Platform.runLater(() -> {
+            algorithmType.setDisable(true);
+            inputType.setDisable(true);
+            generateButton.setDisable(true);
+            copyButton.setDisable(true);
+        });
     }
 
     /**
      * Unlock critical buttons
      */
     private void unlockButtons() {
-        algorithmType.setDisable(false);
-        inputType.setDisable(false);
-        generateButton.setDisable(false);
-        copyButton.setDisable(false);
+        Platform.runLater(() -> {
+            algorithmType.setDisable(false);
+            inputType.setDisable(false);
+            generateButton.setDisable(false);
+            copyButton.setDisable(false);
+        });
     }
 
     /**
@@ -360,8 +381,10 @@ public class Controller implements Initializable {
      * @param errorMessage An error message to display
      * @param displayLabel The label where the error message will be displayed
      */
-    public void displayError(String errorMessage, Label displayLabel){
-        displayLabel.setText(errorMessage);
-        displayLabel.setStyle(CSS_BACKGROUND_RED);
+    public void displayError(String errorMessage, Label displayLabel) {
+        Platform.runLater(() -> {
+            displayLabel.setText(errorMessage);
+            displayLabel.setStyle(CSS_BACKGROUND_RED);
+        });
     }
 }

@@ -1,6 +1,6 @@
 package actions;
 
-import gui.Controller;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 
 /**
@@ -27,7 +27,6 @@ import javafx.scene.control.Label;
 public class CopiedStatusRunner implements Runnable {
 
     Label copiedLabel;
-//    private Controller mainFXMLController;
 
     public CopiedStatusRunner (Label copiedLabel) {
         this.copiedLabel = copiedLabel;
@@ -36,11 +35,9 @@ public class CopiedStatusRunner implements Runnable {
     @Override
     public void run() {
         try {
-//            copiedLabel.setText("(Copied)");
-//            mainFXMLController.copiedLabel.setStyle("-fx-background-color: #FFE4E4");
-            copiedLabel.setText("(Copied)");
-            Thread.sleep(3000);
-            copiedLabel.setText("");
+            Platform.runLater(() -> copiedLabel.setVisible(true));
+            Thread.sleep(2500);
+            Platform.runLater(() -> copiedLabel.setVisible(false));
 
         } catch (InterruptedException ex) {
             ex.printStackTrace();

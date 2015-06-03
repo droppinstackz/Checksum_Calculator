@@ -1,7 +1,6 @@
 package actions;
 
 import gui.Controller;
-import javafx.application.Platform;
 
 import static org.apache.commons.codec.digest.DigestUtils.*;
 
