@@ -174,15 +174,15 @@ public class Controller implements Initializable {
         // Starts the threads that will generate the checksums
         if (inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
+
             GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
             new Thread(ght).start();
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
-            InputStream fileStream = null;
+            InputStream fileStream;
 
             try {
                 fileStream = new FileInputStream(inputFile);
-
                 FILE_SIZE_BYTES = fileStream.available(); // Get the file size in bytes
 
                 GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
@@ -393,9 +393,9 @@ public class Controller implements Initializable {
                 waitLine2Size.setText("");
 
                 FILE_SIZE_BYTES = 0;
-                if (inputType.equals("File")) {
+                if (inputType.getText().equals("File")) {
                     waitLine2Size.setText(FILE_SIZE_BYTES + " bytes");
-                } else if (inputType.equals("Text")) {
+                } else if (inputType.getText().equals("Text")) {
                     waitLine2Size.setText(inputTextField.getText().length() + " characters");
                 }
 

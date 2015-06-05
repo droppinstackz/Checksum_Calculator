@@ -57,23 +57,29 @@ public class GetHash implements Runnable {
 
                 } else {
 
-                    if (ALGORITHM_TYPE.equals("md5")) {
-                        HEX_RESULT = md5Hex(USER_TEXT_INPUT);
+                    switch (ALGORITHM_TYPE) {
+                        case "md5":
+                            HEX_RESULT = md5Hex(USER_TEXT_INPUT);
 
-                    } else if (ALGORITHM_TYPE.equals("sha-1")) {
-                        HEX_RESULT = sha1Hex(USER_TEXT_INPUT);
+                            break;
+                        case "sha-1":
+                            HEX_RESULT = sha1Hex(USER_TEXT_INPUT);
 
-                    } else if (ALGORITHM_TYPE.equals("sha-256")) {
-                        HEX_RESULT = sha256Hex(USER_TEXT_INPUT);
+                            break;
+                        case "sha-256":
+                            HEX_RESULT = sha256Hex(USER_TEXT_INPUT);
 
-                    } else if (ALGORITHM_TYPE.equals("sha-384")) {
-                        HEX_RESULT = sha384Hex(USER_TEXT_INPUT);
+                            break;
+                        case "sha-384":
+                            HEX_RESULT = sha384Hex(USER_TEXT_INPUT);
 
-                    } else if (ALGORITHM_TYPE.equals("sha-512")) {
-                        HEX_RESULT = sha512Hex(USER_TEXT_INPUT);
+                            break;
+                        case "sha-512":
+                            HEX_RESULT = sha512Hex(USER_TEXT_INPUT);
 
-                    } else {
-                        throw new IllegalArgumentException();
+                            break;
+                        default:
+                            throw new IllegalArgumentException();
                     }
 
                     mainFXMLController.returnChecksum(HEX_RESULT, false); // return the result
@@ -81,23 +87,29 @@ public class GetHash implements Runnable {
 
             } else if(INPUT_TYPE.equals("File")) {
                 try {
-                    if(ALGORITHM_TYPE.equals("md5")) {
-                        HEX_RESULT = md5Hex(USER_FILE_INPUT);
+                    switch (ALGORITHM_TYPE) {
+                        case "md5":
+                            HEX_RESULT = md5Hex(USER_FILE_INPUT);
 
-                    } else if(ALGORITHM_TYPE.equals("sha-1")) {
-                        HEX_RESULT = sha1Hex(USER_FILE_INPUT);
+                            break;
+                        case "sha-1":
+                            HEX_RESULT = sha1Hex(USER_FILE_INPUT);
 
-                    } else if(ALGORITHM_TYPE.equals("sha-256")) {
-                        HEX_RESULT = sha256Hex(USER_FILE_INPUT);
+                            break;
+                        case "sha-256":
+                            HEX_RESULT = sha256Hex(USER_FILE_INPUT);
 
-                    } else if(ALGORITHM_TYPE.equals("sha-384")) {
-                        HEX_RESULT = sha384Hex(USER_FILE_INPUT);
+                            break;
+                        case "sha-384":
+                            HEX_RESULT = sha384Hex(USER_FILE_INPUT);
 
-                    } else if(ALGORITHM_TYPE.equals("sha-512")) {
-                        HEX_RESULT = sha512Hex(USER_FILE_INPUT);
+                            break;
+                        case "sha-512":
+                            HEX_RESULT = sha512Hex(USER_FILE_INPUT);
 
-                    } else {
-                        throw new IllegalArgumentException();
+                            break;
+                        default:
+                            throw new IllegalArgumentException();
                     }
 
                     // Close file
