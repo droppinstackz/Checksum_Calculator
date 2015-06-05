@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 droppinstackz
+ /* Copyright (C) 2015 droppinstackz
  *
  * This file is part of Checksum Calculator.
  *
@@ -16,73 +16,46 @@
  * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*@font-face {
-    font-family: OpenSans-Bold;
-    src: url(file:resources/fonts/OpenSans-Bold.ttf);
-}*/
+@font-face {
+    font-family: sans-serif;
+    src: url("file:resources/fonts/Roboto-Light.ttf");
+}
 
 .root {
-    -fx-background-color: #ffffff;
-
-    -fx-font-family: 'Helvetica Neue';
-    /*-fx-font-family: 'Vera';*/
-    /*-fx-font-size: 14.0px;*/
-
+    -fx-background-color: #FFFFFF;
     -flat-red: rgb(237.0, 68.0, 37.0);
-    -dark: rgb(47.0, 52.0, 57.0);
 }
 
 .text {
     -fx-font-smoothing-type: gray;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 10.0pt;
 }
 
-/*.choice-box {
-    -fx-background-color: #DFDBDF;
-}
-    *//* To prevent focused elements from looking selected *//*
-.choice-box:focused{
-    -fx-background-color: #DFDBDF;
-}
-.choice-box:hover{
-    -fx-background-color: derive(-flat-red, 60.0%);
-}*/
-
-    /* Button color when clicked */
-/*.choice-box:armed{
-    -fx-background-color: derive(-flat-red, -5.0%);
-}*/
-
+/* Default look for all combo boxes */ 
 .combo-box {
     -fx-background-color: #DFDBDF;
 }
-    /* To prevent focused elements from looking selected */
-/*.combo-box:focused{
-    -fx-background-color: #DFDBDF;
-}*/
-.combo-box:hover{
+.combo-box:hover {
     -fx-background-color: derive(-flat-red, 60.0%);
 }
-.combo-box:armed{
+.combo-box:armed {
     -fx-background-color: derive(-flat-red, -5.0%);
-}
-.combo-box-popup .list-cell: selected {
-    -fx-background-color: #DFDBDF;
-    -fx-text-fill: #000000;
 }
 .list-cell: hover {
     -fx-background-color: derive(-flat-red, 60.0%);
     -fx-text-fill: #000000;
 }
+.combo-box-popup .list-cell: selected {
+    -fx-background-color: #DFDBDF;
+    -fx-text-fill: #000000;
+}
 
 
-
+/* Default look for all menus */
 .menu-button {
     -fx-background-color: #DFDBDF;
 }
-    /* To prevent focused elements from looking selected */
-/*.menu-button:focused{
-    -fx-background-color: #DFDBDF;
-}*/
 .menu-button:hover{
     -fx-background-color: derive(-flat-red, 60.0%);
 }
@@ -96,10 +69,10 @@
 .menu-item: hover {
     -fx-highlight-fill: #000000;
     -fx-background-color: derive(-flat-red, 60.0%);
-
 }
-
-
+.menu-item .label {
+    -fx-text-fill: #000000;
+}
 
 
 /* Default look for all buttons */
@@ -111,16 +84,10 @@
     -fx-alignment: CENTER;
     -fx-content-display: LEFT;
 }
-    /* To prevent focused elements from looking selected */
-/*.button:focused{
-    -fx-background-color: #DFDBDF;
-}*/
-    /* Button color when cursor is hovering */
-.button:hover{
+.button:hover{ /* Button color when cursor is hovering */
     -fx-background-color: derive(-flat-red, 50.0%);
 }
-    /* Button color when clicked */
-.button:armed{
+.button:armed{ /* Button color when clicked */
     -fx-background-color: derive(-flat-red, -5.0%);
 }
 
@@ -128,18 +95,13 @@
 /* Default look for all checkboxes */
 .check-box:determinate .box {
     -fx-background-color: #DFDBDF;
-}
-    /* To prevent focused elements from looking selected */
-/*.check-box:determinate  .box:focused{
-    -fx-background-color: #DFDBDF;
-}*/
-    /* Checkbox color when cursor is hovering */
-.check-box:determinate:hover .box{
+}    
+.check-box:determinate:hover .box{ /* Checkbox color when cursor is hovering */
     -fx-background-color: derive(-flat-red, 50.0%);
 }
 
 
-/* Default look for all text fields , white   , .text-field */
+/* Default look for all text fields */
 .text-field {
     -fx-background-color: #DFDBDF, white;
     -fx-background-insets: 0.0, 0.2em;

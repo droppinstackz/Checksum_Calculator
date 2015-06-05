@@ -26,6 +26,7 @@ import java.io.*;
  * You should have received a copy of the GNU General Public License
  * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 public class GetHash implements Runnable {
 
     private static final int MAX_STRING_LENGTH = 1000000;
@@ -113,7 +114,6 @@ public class GetHash implements Runnable {
                     HEX_RESULT = "IO error";
                 }
                 mainFXMLController.returnChecksum(HEX_RESULT, false);
-//                Platform.runLater(() -> mainFXMLController.returnChecksum(HEX_RESULT, false)); // return the result
             }
 
         } catch (Exception e) {
@@ -173,6 +173,4 @@ public class GetHash implements Runnable {
 //
 //        return false;
 //    }
-
-
 }

@@ -42,10 +42,11 @@ import javafx.stage.Stage;
 public class Controller implements Initializable {
 
     @FXML private TextField inputTextField;
-    @FXML private ComboBox algorithmType;
+    @FXML private ComboBox<Object> algorithmType;
     @FXML private MenuButton inputType;
     @FXML private Button openButton;
     @FXML private Button generateButton;
+    @FXML private Button stopButton;
 
     @FXML private Button copyButton;
     @FXML private Button pasteButton;
@@ -55,17 +56,21 @@ public class Controller implements Initializable {
     @FXML private Label firstChecksum;
     @FXML private Label secondChecksum;
     @FXML public Label copiedLabel;
-    @FXML private ProgressBar progressBar;
+
+    @FXML private Label waitLine1;
+    @FXML private Label waitLine2Size;
+    @FXML private Label waitLine3;
+    @FXML private ProgressIndicator progressIndicator;
 
     private File inputFile = null;
     private String userText = "";
+    private static int FILE_SIZE_BYTES = 0;
 
     private static String CSS_BACKGROUND_GREEN = "-fx-background-color: #E2FDE3";
     private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
     private static String CSS_BACKGROUND_WHITE = "-fx-background-color: #FFFFFF";
 
     // application will have to remember the algorithm selection, input type selection, and checkbox selection
-    // add a 'Copied' label (in red) to the right of the copy button after it is pushed
     // add a 'Stop' button to stop the checksum calculation
 
     @Override
@@ -85,21 +90,19 @@ public class Controller implements Initializable {
         // Set the checksum result fields blank and enable & disable the appropriate elements
         firstChecksum.setText("");
         secondChecksum.setText("");
+
         inputTextField.setDisable(false);
         openButton.setDisable(true);
+        copiedLabel.setVisible(false);
+        inputTextField.requestFocus();
+
+        // CompareTo options
         compareToCheckbox.setSelected(false);
         pasteButton.setDisable(true);
         clearButton.setDisable(true);
         secondChecksum.setDisable(true);
 
-        copiedLabel.setText("");
-
-        progressBar.setDisable(true);
-        progressBar.setVisible(false);
-        progressBar.setProgress(0);
-
-
-        inputTextField.requestFocus();
+        setProgressMessage("disable");
     }
 
     @FXML
@@ -141,7 +144,7 @@ public class Controller implements Initializable {
         try {
             Stage stage = (Stage) generateButton.getScene().getWindow();
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open File");
+            fileChooser.setTitle("Select File");
             inputFile = fileChooser.showOpenDialog(stage);
 
             if (inputFile != null) {  // Display file path in inputTextField
@@ -153,21 +156,20 @@ public class Controller implements Initializable {
                     filePath = filePath.substring(0, 11) + "... " + filePath.substring(stringLength - 30);
                 }
                 inputTextField.setText(filePath);
+                generateButton.setDisable(false);
+                firstChecksum.setText("");
+                clearHighlights();
             }
         } catch (Exception e) {
             displayError("The file could not be opened", firstChecksum);
         }
-        generateButton.setDisable(false);
     }
 
     @FXML
     protected void handleGenerateButtonAction() {
+
         lockButtons();
-
-        Platform.runLater(() -> progressBar.setDisable(false));
-        Platform.runLater(() -> progressBar.setVisible(true));
-        Platform.runLater(() -> progressBar.setProgress(-1));
-
+        setProgressMessage("enable");
 
         // Starts the threads that will generate the checksums
         if (inputType.getText().equals("Text")) {
@@ -181,8 +183,7 @@ public class Controller implements Initializable {
             try {
                 fileStream = new FileInputStream(inputFile);
 
-                // if over a certain size, display the size and indeterminate progress bar
-//                setWaitText("(" + fileStream.available() + " Bytes)");
+                FILE_SIZE_BYTES = fileStream.available(); // Get the file size in bytes
 
                 GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
                 new Thread(ght).start();
@@ -196,8 +197,11 @@ public class Controller implements Initializable {
                 ioEX1.printStackTrace();
             }
         }
+    }
 
-
+    @FXML
+    protected void handleStopButtonAction() {
+        //TODO code to kill checksum generator thread
     }
 
     @FXML
@@ -290,32 +294,25 @@ public class Controller implements Initializable {
 
 
     public void returnChecksum(String result, boolean failure) {
-//        setWaitText(" ", Controller.this);
+        Platform.runLater(() -> {
+            setProgressMessage("disable");
 
-        Platform.runLater(() -> progressBar.setDisable(true));
-        Platform.runLater(() -> progressBar.setVisible(false));
-        Platform.runLater(() -> progressBar.setProgress(0));
+            if (failure) {
+                displayError(result, firstChecksum);
 
-        if (failure) {
-            Platform.runLater(() -> displayError(result, firstChecksum));
+            } else {
+                firstChecksum.setText(result);
+                compareChecksums();
+            }
 
-        } else {
-            Platform.runLater(() -> firstChecksum.setText(result));
-            Platform.runLater(() -> compareChecksums());
-        }
+            unlockButtons();
 
-        Platform.runLater(() -> unlockButtons());
-
-        // Place cursor focus back to the inputTextfield
-        if (inputType.getText().equals("Text")) {
-            Platform.runLater(() -> inputTextField.setDisable(false));
-            Platform.runLater(() -> inputTextField.requestFocus());
-        }
-    }
-
-
-    public void setWaitText(String fileSize) {
-
+            // Place cursor focus back to the inputTextfield
+            if (inputType.getText().equals("Text")) {
+                inputTextField.setDisable(false);
+                inputTextField.requestFocus();
+            }
+        });
     }
 
     /**
@@ -372,6 +369,55 @@ public class Controller implements Initializable {
             inputType.setDisable(false);
             generateButton.setDisable(false);
             copyButton.setDisable(false);
+        });
+    }
+
+    /**
+     * Set the progress message in the first text-field
+     *
+     * @param action "enable" to enable message, and "disable" to disable message
+     */
+    private void setProgressMessage(String action) {
+        Platform.runLater(() -> {
+            if (action.equals("enable")) {
+                generateButton.setVisible(false);
+
+                stopButton.setVisible(true);
+
+                progressIndicator.setDisable(false);
+                progressIndicator.setVisible(true);
+                progressIndicator.setProgress(-1);
+
+                waitLine1.setVisible(true);
+                waitLine2Size.setVisible(true);
+                waitLine2Size.setText("");
+
+                FILE_SIZE_BYTES = 0;
+                if (inputType.equals("File")) {
+                    waitLine2Size.setText(FILE_SIZE_BYTES + " bytes");
+                } else if (inputType.equals("Text")) {
+                    waitLine2Size.setText(inputTextField.getText().length() + " characters");
+                }
+
+                waitLine3.setVisible(true);
+
+                firstChecksum.setText("");
+                clearHighlights();
+
+            } else if (action.equals("disable")) {
+                generateButton.setVisible(true);
+
+                stopButton.setDisable(true);
+                stopButton.setVisible(false);
+
+                progressIndicator.setDisable(true);
+                progressIndicator.setVisible(false);
+                progressIndicator.setProgress(0);
+
+                waitLine1.setVisible(false);
+                waitLine2Size.setVisible(false);
+                waitLine3.setVisible(false);
+            }
         });
     }
 
