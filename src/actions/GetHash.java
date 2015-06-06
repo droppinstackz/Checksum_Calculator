@@ -29,10 +29,10 @@ import java.io.*;
 
 public class GetHash implements Runnable {
 
-    private static final int MAX_STRING_LENGTH = 1000000;
     private static String ALGORITHM_TYPE = "md5";
     private static String INPUT_TYPE = "Text";
     private static String HEX_RESULT = "";
+    private static boolean ABORTED = false;
 
     private static String USER_TEXT_INPUT = "";
     private static InputStream USER_FILE_INPUT = null;
@@ -42,21 +42,10 @@ public class GetHash implements Runnable {
 
     @Override
     public void run() {
-
         try {
             if (INPUT_TYPE.equals("Text")) {
 
-                if (checkLength(USER_TEXT_INPUT) != 0) { // check that the length is not too long
-                    String errorTooLong = "Input string is " + checkLength(USER_TEXT_INPUT) + " character";
-
-                    // Add an 's' if exceeds the length by more than 1
-                    if (checkLength(USER_TEXT_INPUT) > 1){
-                        errorTooLong += "s";
-                    }
-                    mainFXMLController.returnChecksum(errorTooLong + " too long. Max length is " + MAX_STRING_LENGTH + " characters.", true);
-
-                } else {
-
+                try {
                     switch (ALGORITHM_TYPE) {
                         case "md5":
                             HEX_RESULT = md5Hex(USER_TEXT_INPUT);
@@ -81,11 +70,14 @@ public class GetHash implements Runnable {
                         default:
                             throw new IllegalArgumentException();
                     }
+                    mainFXMLController.returnChecksum(HEX_RESULT, 0); // return the result
 
-                    mainFXMLController.returnChecksum(HEX_RESULT, false); // return the result
+                } catch (Exception e) {
+                    mainFXMLController.returnChecksum("Could not read the input text", 1);
+                    e.printStackTrace();
                 }
 
-            } else if(INPUT_TYPE.equals("File")) {
+            } else if (INPUT_TYPE.equals("File")) {
                 try {
                     switch (ALGORITHM_TYPE) {
                         case "md5":
@@ -114,22 +106,44 @@ public class GetHash implements Runnable {
 
                     // Close file
                     try {
-                        if(USER_FILE_INPUT != null) {
+                        if (USER_FILE_INPUT != null) {
                             USER_FILE_INPUT.close();
                         }
-                    } catch (IOException ioEX2) {
-                        mainFXMLController.returnChecksum("The file stream could not be closed", true);
-                        ioEX2.printStackTrace();
+                        mainFXMLController.returnChecksum(HEX_RESULT, 0);
+                    } catch (IOException e) {
+                        mainFXMLController.returnChecksum("The file stream could not be closed", 1);
+                        e.printStackTrace();
                     }
-
                 } catch (IOException e) {
-                    HEX_RESULT = "IO error";
+                    if (ABORTED){ // If the user voluntarily aborted the thread
+                        mainFXMLController.returnChecksum("                      Calculation stopped", 2);
+                    } else {
+                        mainFXMLController.returnChecksum("IO error", 1);
+                        e.printStackTrace();
+                    }
                 }
-                mainFXMLController.returnChecksum(HEX_RESULT, false);
             }
-
         } catch (Exception e) {
-            mainFXMLController.returnChecksum("The generator function encountered a fatal error.", true);
+            mainFXMLController.returnChecksum("The generator function encountered a fatal error.", 1);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Stops the main running thread. Since the checksum methods are external blocking methods
+     * using IO operations, which can't be interrupted, this method is a workaround to
+     * conventional thread interrupts. It closes the file stream being read, which forces
+     * an IO Exception that kills the checksum generation.
+     */
+    public void stop() {
+        try {
+            ABORTED = true; // Sets the ABORTED flag to true to let the thread know it was
+                            // voluntarily aborted
+            if (USER_FILE_INPUT != null) {
+                USER_FILE_INPUT.close();
+            }
+        } catch (IOException e) {
+            mainFXMLController.returnChecksum("The file stream could not be closed", 1);
             e.printStackTrace();
         }
     }
@@ -165,24 +179,4 @@ public class GetHash implements Runnable {
 
         mainFXMLController = inputFXMLController;
     }
-
-    /**
-     * Returns 0 if the input is less than the max length, or return the number of characters exceeding the
-     * max length
-     * @param input The user-entered string
-     * @return 0 if the string is less than the max length, or if it is longer than the max length,
-     *      the difference between the string length and max length
-     */
-    private static int checkLength(String input) {
-        if (input.length() < MAX_STRING_LENGTH) {
-            return 0;
-        } else {
-            return input.length() - MAX_STRING_LENGTH;
-        }
-    }
-
-//    private static boolean checkSize(String input) { // need to change input
-//
-//        return false;
-//    }
 }

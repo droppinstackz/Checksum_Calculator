@@ -70,6 +70,8 @@ public class Controller implements Initializable {
     private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
     private static String CSS_BACKGROUND_WHITE = "-fx-background-color: #FFFFFF";
 
+    private GetHash ght;
+
     // application will have to remember the algorithm selection, input type selection, and checkbox selection
     // add a 'Stop' button to stop the checksum calculation
 
@@ -175,7 +177,7 @@ public class Controller implements Initializable {
         if (inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
 
-            GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
+            ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
             new Thread(ght).start();
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
@@ -185,8 +187,9 @@ public class Controller implements Initializable {
                 fileStream = new FileInputStream(inputFile);
                 FILE_SIZE_BYTES = fileStream.available(); // Get the file size in bytes
 
-                GetHash ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
+                ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
                 new Thread(ght).start();
+
 
             } catch (FileNotFoundException e) {
                 displayError("The file could not be found", firstChecksum);
@@ -201,7 +204,10 @@ public class Controller implements Initializable {
 
     @FXML
     protected void handleStopButtonAction() {
-        //TODO code to kill checksum generator thread
+        // If the thread exists (non-null), stop it
+        if(ght != null) {
+            ght.stop();
+        }
     }
 
     @FXML
@@ -275,7 +281,8 @@ public class Controller implements Initializable {
                     }
                 }
             } catch (Exception e) {
-                displayError("The clipboard could not be accessed. Another application may currently be accessing it.", secondChecksum);
+                displayError("The clipboard could not be accessed. Another application " +
+                        "may currently be accessing it.", secondChecksum);
             }
             pasteButton.setDisable(false);
         });
@@ -292,17 +299,28 @@ public class Controller implements Initializable {
         });
     }
 
-
-    public void returnChecksum(String result, boolean failure) {
+    /**
+     * This method is called by the checksum generation thread (GetHash) upon completion.
+     *
+     * @param result The result of the generation process. This is usually a hex value, but can
+     *               also be an error or status message to be displayed in the first text field
+     * @param status The status of the operation. A status of '0' is a success, '1' a failure,
+     *               and '2' when the generation is aborted
+     */
+    public void returnChecksum(String result, int status) {
         Platform.runLater(() -> {
             setProgressMessage("disable");
 
-            if (failure) {
-                displayError(result, firstChecksum);
-
-            } else {
+            if (status == 0) { // Success
                 firstChecksum.setText(result);
                 compareChecksums();
+
+            } else if (status == 1) { // Error
+                displayError(result, firstChecksum);
+
+            } else if (status == 2) { // Aborted
+                firstChecksum.setText(result);
+                clearHighlights();
             }
 
             unlockButtons();
@@ -320,7 +338,8 @@ public class Controller implements Initializable {
      * they are highlighted green, but if they are different, set the background to red.
      */
     private void compareChecksums() {
-        if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) && secondChecksum.getText().equals(firstChecksum.getText()) && compareToCheckbox.isSelected()) {
+        if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) &&
+                secondChecksum.getText().equals(firstChecksum.getText()) && compareToCheckbox.isSelected()) {
             // set color to green
             // the checksums are the same & there is non-null text to compare
             Platform.runLater(() -> {
@@ -328,7 +347,8 @@ public class Controller implements Initializable {
                 secondChecksum.setStyle(CSS_BACKGROUND_GREEN);
             });
 
-            } else if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) && compareToCheckbox.isSelected()) {
+            } else if ((!firstChecksum.getText().equals("")) && (!secondChecksum.getText().equals("")) &&
+                compareToCheckbox.isSelected()) {
             // set color to red
             // the checksums are not the same & there is non-null text to compare
             Platform.runLater(() -> {
@@ -357,6 +377,7 @@ public class Controller implements Initializable {
             inputType.setDisable(true);
             generateButton.setDisable(true);
             copyButton.setDisable(true);
+            openButton.setDisable(true);
         });
     }
 
@@ -369,6 +390,8 @@ public class Controller implements Initializable {
             inputType.setDisable(false);
             generateButton.setDisable(false);
             copyButton.setDisable(false);
+
+            if(inputType.getText().equals("File")) { openButton.setDisable(false); }
         });
     }
 
@@ -380,11 +403,12 @@ public class Controller implements Initializable {
     private void setProgressMessage(String action) {
         Platform.runLater(() -> {
             if (action.equals("enable")) {
+                // Hide the 'generate' button and display the 'stop' button
                 generateButton.setVisible(false);
-
+                stopButton.setDisable(false);
                 stopButton.setVisible(true);
 
-                progressIndicator.setDisable(false);
+                progressIndicator.setDisable(false); // Enable the progress spinner
                 progressIndicator.setVisible(true);
                 progressIndicator.setProgress(-1);
 
@@ -392,9 +416,10 @@ public class Controller implements Initializable {
                 waitLine2Size.setVisible(true);
                 waitLine2Size.setText("");
 
-                FILE_SIZE_BYTES = 0;
+                // Display either the file size in bytes, or the number of characters
                 if (inputType.getText().equals("File")) {
                     waitLine2Size.setText(FILE_SIZE_BYTES + " bytes");
+                    FILE_SIZE_BYTES = 0;
                 } else if (inputType.getText().equals("Text")) {
                     waitLine2Size.setText(inputTextField.getText().length() + " characters");
                 }
@@ -405,6 +430,7 @@ public class Controller implements Initializable {
                 clearHighlights();
 
             } else if (action.equals("disable")) {
+                // Revert the display to the non-progress state
                 generateButton.setVisible(true);
 
                 stopButton.setDisable(true);
@@ -427,7 +453,7 @@ public class Controller implements Initializable {
      * @param errorMessage An error message to display
      * @param displayLabel The label where the error message will be displayed
      */
-    public void displayError(String errorMessage, Label displayLabel) {
+    private void displayError(String errorMessage, Label displayLabel) {
         Platform.runLater(() -> {
             displayLabel.setText(errorMessage);
             displayLabel.setStyle(CSS_BACKGROUND_RED);

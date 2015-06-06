@@ -26,18 +26,18 @@ import javafx.scene.control.Label;
 
 public class CopiedStatusRunner implements Runnable {
 
-    Label copiedLabel;
+    Label timedLabel;
 
-    public CopiedStatusRunner (Label copiedLabel) {
-        this.copiedLabel = copiedLabel;
+    public CopiedStatusRunner (Label timedLabel) {
+        this.timedLabel = timedLabel;
     }
 
     @Override
     public void run() {
         try {
-            Platform.runLater(() -> copiedLabel.setVisible(true));
+            Platform.runLater(() -> timedLabel.setVisible(true));
             Thread.sleep(2500);
-            Platform.runLater(() -> copiedLabel.setVisible(false));
+            Platform.runLater(() -> timedLabel.setVisible(false));
 
         } catch (InterruptedException ex) {
             ex.printStackTrace();
