@@ -1,3 +1,7 @@
+Note: The licences for the font and the Apache library are included in
+      their respective folders
+
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
