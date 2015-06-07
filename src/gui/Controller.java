@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import utils.PreferencesLoader;
 
 /**
  * Controller for the Checksum Calculator GUI
@@ -65,6 +66,8 @@ public class Controller implements Initializable {
     private File inputFile = null;
     private String userText = "";
     private static int FILE_SIZE_BYTES = 0;
+    private File home = new File(System.getProperty("user.home"));
+    public static Controller mainFXMLController;
 
     private static String CSS_BACKGROUND_GREEN = "-fx-background-color: #E2FDE3";
     private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
@@ -72,39 +75,40 @@ public class Controller implements Initializable {
 
     private GetHash ght;
 
-    // application will have to remember the algorithm selection, input type selection, and checkbox selection
-    // add a 'Stop' button to stop the checksum calculation
-
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         // Initialize the algorithmType ChoiceBox
         algorithmType.setItems(FXCollections.observableArrayList());
         algorithmType.getItems().add(0, "MD5");
-        algorithmType.setValue("MD5");
         algorithmType.getItems().add(1, "SHA-1");
         algorithmType.getItems().add(2, "SHA-256");
         algorithmType.getItems().add(3, "SHA-384");
         algorithmType.getItems().add(4, "SHA-512");
-
-        // Initialize the inputType ChoiceBox
-        inputType.setText("Text");
+        algorithmType.setValue(PreferencesLoader.getAlgorithmType());
 
         // Set the checksum result fields blank and enable & disable the appropriate elements
         firstChecksum.setText("");
         secondChecksum.setText("");
 
-        inputTextField.setDisable(false);
-        openButton.setDisable(true);
-        copiedLabel.setVisible(false);
-        inputTextField.requestFocus();
+        // Initialize the inputType ChoiceBox
+        inputType.setText(PreferencesLoader.getInputType());
+        if(PreferencesLoader.getInputType().equals("Text")) {
+            handleTextInputTypeSelection();
+        } else {
+            handleFileInputTypeSelection();
+        }
 
         // CompareTo options
-        compareToCheckbox.setSelected(false);
-        pasteButton.setDisable(true);
-        clearButton.setDisable(true);
-        secondChecksum.setDisable(true);
+        if(PreferencesLoader.getCompareToChecked()) {
+            compareToCheckbox.setSelected(true);
+        } else {
+            compareToCheckbox.setSelected(false);
+        }
 
+        copiedLabel.setVisible(false);
         setProgressMessage("disable");
+        PreferencesLoader.closeInputStream();
+        mainFXMLController = Controller.this;
     }
 
     @FXML
@@ -147,11 +151,13 @@ public class Controller implements Initializable {
             Stage stage = (Stage) generateButton.getScene().getWindow();
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select File");
+            fileChooser.setInitialDirectory(home);
             inputFile = fileChooser.showOpenDialog(stage);
 
             if (inputFile != null) {  // Display file path in inputTextField
                 String filePath = inputFile.getAbsolutePath();
                 int stringLength = filePath.length();
+                home = inputFile.getParentFile();
 
                 // place ellipses in the middle of the file path if it is too long
                 if (stringLength > 50) {
@@ -177,7 +183,7 @@ public class Controller implements Initializable {
         if (inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
 
-            ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), inputTextField.getText(), Controller.this);
+            ght = new GetHash(algorithmType.getValue().toString().toUpperCase(), inputTextField.getText(), Controller.this);
             new Thread(ght).start();
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
@@ -187,9 +193,8 @@ public class Controller implements Initializable {
                 fileStream = new FileInputStream(inputFile);
                 FILE_SIZE_BYTES = fileStream.available(); // Get the file size in bytes
 
-                ght = new GetHash(algorithmType.getValue().toString().toLowerCase(), fileStream, Controller.this);
+                ght = new GetHash(algorithmType.getValue().toString().toUpperCase(), fileStream, Controller.this);
                 new Thread(ght).start();
-
 
             } catch (FileNotFoundException e) {
                 displayError("The file could not be found", firstChecksum);
@@ -458,5 +463,12 @@ public class Controller implements Initializable {
             displayLabel.setText(errorMessage);
             displayLabel.setStyle(CSS_BACKGROUND_RED);
         });
+    }
+
+    /**
+     * This method saves the user preferences on file exit
+     */
+    public void onExit() {
+        PreferencesLoader.savePreferences(algorithmType.getValue().toString(), inputType.getText(), compareToCheckbox.isSelected());
     }
 }

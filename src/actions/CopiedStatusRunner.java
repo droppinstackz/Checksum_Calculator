@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 
 /**
- * Generates a hash of a string or a file using the Apache Commons Codec.
+ * A thread that temporarily displays, then hides a label for 2.5 seconds
  *
  * Copyright (C) 2015 droppinstackz
  *

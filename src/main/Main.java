@@ -1,5 +1,6 @@
 package main;
 
+import gui.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import utils.PreferencesLoader;
 
 /**
  * Copyright (C) 2015 droppinstackz
@@ -28,8 +30,13 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    public static String applicationVersion = "1.0";
+    private Controller mainFXMLController;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        PreferencesLoader.checkFolders();
 
         Parent root = FXMLLoader.load(getClass().getResource("/gui/ChecksumLayout.fxml"));
         primaryStage.setScene(new Scene(root, 390, 455));
@@ -37,13 +44,17 @@ public class Main extends Application {
         Font.loadFont(primaryStage.getScene().getClass().getResourceAsStream("file:resources/fonts/Roboto-Light.ttf"), 10);
         primaryStage.getIcons().add(new Image("file:resources/icon.png"));
         primaryStage.setTitle("Checksum Calculator");
-
-        primaryStage.resizableProperty().setValue(false);
+        mainFXMLController = Controller.mainFXMLController;
         primaryStage.show();
-        root.toFront();
+        primaryStage.resizableProperty().setValue(false);
+        primaryStage.toFront();
+
+
+        // Save application setting on exit
+        primaryStage.setOnCloseRequest(event -> {
+            mainFXMLController.onExit();
+        });
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) { launch(args); }
 }
