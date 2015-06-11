@@ -4,8 +4,6 @@ import actions.GetHash;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 
-import java.awt.*;
-import java.awt.datatransfer.*;
 import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import utils.PreferencesLoader;
 
 /**
@@ -68,6 +68,7 @@ public class Controller implements Initializable {
     private static int FILE_SIZE_BYTES = 0;
     private File home = new File(System.getProperty("user.home"));
     public static Controller mainFXMLController;
+    private InputStream fileStream;
 
     private static String CSS_BACKGROUND_GREEN = "-fx-background-color: #E2FDE3";
     private static String CSS_BACKGROUND_RED = "-fx-background-color: #FFE4E4";
@@ -91,18 +92,21 @@ public class Controller implements Initializable {
         secondChecksum.setText("");
 
         // Initialize the inputType ChoiceBox
-        inputType.setText(PreferencesLoader.getInputType());
         if(PreferencesLoader.getInputType().equals("Text")) {
+            inputType.setText("File"); // Messy workaround to initialize the application correctly
             handleTextInputTypeSelection();
         } else {
+            inputType.setText("Text"); // Same as above comment
             handleFileInputTypeSelection();
         }
 
         // CompareTo options
         if(PreferencesLoader.getCompareToChecked()) {
             compareToCheckbox.setSelected(true);
+            handleCompareToSelect();
         } else {
             compareToCheckbox.setSelected(false);
+            handleCompareToSelect();
         }
 
         copiedLabel.setVisible(false);
@@ -120,27 +124,31 @@ public class Controller implements Initializable {
     @FXML
     protected void handleTextInputTypeSelection() {
         // When the user selects the "Text" option from the dropdown
-        Platform.runLater(() -> {
-            inputType.setText("Text");
-            inputTextField.setText(userText);
-            inputTextField.setDisable(false);
-            openButton.setDisable(true);
-            generateButton.setDisable(false);
-            inputTextField.requestFocus();
-        });
+        if(!inputType.getText().equals("Text")) {
+            Platform.runLater(() -> {
+                inputType.setText("Text");
+                inputTextField.setText(userText);
+                inputTextField.setDisable(false);
+                openButton.setDisable(true);
+                generateButton.setDisable(false);
+                inputTextField.requestFocus();
+            });
+        }
     }
 
     @FXML
     protected void handleFileInputTypeSelection() {
         // When the user selects the "File" option from the dropdown
-        Platform.runLater(() -> {
-            inputType.setText("File");
-            userText = inputTextField.getText();
-            inputTextField.setText("");
-            inputTextField.setDisable(true);
-            openButton.setDisable(false);
-            generateButton.setDisable(true);
-        });
+        if(!inputType.getText().equals("File")) {
+            Platform.runLater(() -> {
+                inputType.setText("File");
+                userText = inputTextField.getText();
+                inputTextField.setText("");
+                inputTextField.setDisable(true);
+                openButton.setDisable(false);
+                generateButton.setDisable(true);
+            });
+        }
     }
 
     @FXML
@@ -187,7 +195,7 @@ public class Controller implements Initializable {
             new Thread(ght).start();
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
-            InputStream fileStream;
+
 
             try {
                 fileStream = new FileInputStream(inputFile);
@@ -197,11 +205,12 @@ public class Controller implements Initializable {
                 new Thread(ght).start();
 
             } catch (FileNotFoundException e) {
-                displayError("The file could not be found", firstChecksum);
+                returnChecksum("The file could not be found or opened. It may have been moved, deleted, or you " +
+                        "do not have read/write permissions to it.", 1);
                 e.printStackTrace();
 
             } catch (IOException ioEX1) {
-                displayError("The file could not be read", firstChecksum);
+                returnChecksum("The file could not be read. It may have been moved, renamed, or deleted while in use.", 1);
                 ioEX1.printStackTrace();
             }
         }
@@ -220,9 +229,10 @@ public class Controller implements Initializable {
         // Copy the checksum text into the user's system clipboard if it is not empty
         Platform.runLater(() -> {
             if (!firstChecksum.getText().equals("")) {
-                StringSelection checksumSelection = new StringSelection(firstChecksum.getText());
-                Clipboard clipboardCopy = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboardCopy.setContents(checksumSelection, checksumSelection);
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new javafx.scene.input.ClipboardContent();
+                content.putString(firstChecksum.getText());
+                clipboard.setContent(content);
 
                 CopiedStatusRunner ctr = new CopiedStatusRunner(copiedLabel);
                 new Thread(ctr).start();
@@ -257,7 +267,32 @@ public class Controller implements Initializable {
     protected void handlePasteButtonAction() {
         Platform.runLater(() -> {
             pasteButton.setDisable(true);
+            secondChecksum.setStyle(CSS_BACKGROUND_WHITE);
+
             try {
+                String clipboardContents = "";
+                Clipboard content = Clipboard.getSystemClipboard();
+
+                if(content != null) {
+                    clipboardContents = content.getString();
+
+                    // If the length is longer than the longest checksum result, print error message
+                    if (clipboardContents.length() > 128) {
+                        displayError("String pasted is too long  (Max length of 128 characters). " +
+                                "Please paste in a valid checksum result.", secondChecksum);
+                    } else {
+                        secondChecksum.setText(clipboardContents);
+                        compareChecksums();
+                    }
+                } else {
+                    displayError("Could not read the clipboard - it may be empty.", secondChecksum);
+                }
+
+
+
+
+
+                /*
                 // Retrieve contents from the clipboard
                 Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
                 Transferable validContents = clipboardPaste.getContents(null);
@@ -276,15 +311,9 @@ public class Controller implements Initializable {
                         e.printStackTrace();
                     }
 
-                    // If the length is longer than the longest checksum result, print error message
-                    if (clipboardContents.length() > 128) {
-                        displayError("String pasted is too long  (Max length of 128 characters). " +
-                                "Please paste in a valid checksum result.", secondChecksum);
-                    } else {
-                        secondChecksum.setText(clipboardContents);
-                        compareChecksums();
-                    }
+
                 }
+                */
             } catch (Exception e) {
                 displayError("The clipboard could not be accessed. Another application " +
                         "may currently be accessing it.", secondChecksum);
@@ -313,8 +342,10 @@ public class Controller implements Initializable {
      *               and '2' when the generation is aborted
      */
     public void returnChecksum(String result, int status) {
+
+        setProgressMessage("disable");
+
         Platform.runLater(() -> {
-            setProgressMessage("disable");
 
             if (status == 0) { // Success
                 firstChecksum.setText(result);
@@ -469,6 +500,15 @@ public class Controller implements Initializable {
      * This method saves the user preferences on file exit
      */
     public void onExit() {
-        PreferencesLoader.savePreferences(algorithmType.getValue().toString(), inputType.getText(), compareToCheckbox.isSelected());
+        if(fileStream != null) { // close the file if it has not been closed yet
+            try {
+                fileStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        PreferencesLoader.savePreferences(algorithmType.getValue().toString(), inputType.getText(),
+                compareToCheckbox.isSelected());
     }
 }

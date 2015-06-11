@@ -30,7 +30,7 @@ import utils.PreferencesLoader;
  */
 public class Main extends Application {
 
-    public static String applicationVersion = "1.0";
+    public static String applicationVersion = "0.1 beta";
     private Controller mainFXMLController;
 
     @Override
@@ -41,12 +41,12 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/gui/ChecksumLayout.fxml"));
         primaryStage.setScene(new Scene(root, 390, 455));
 
-        Font.loadFont(primaryStage.getScene().getClass().getResourceAsStream("file:resources/fonts/Roboto-Light.ttf"), 10);
-        primaryStage.getIcons().add(new Image("file:resources/icon.png"));
-        primaryStage.setTitle("Checksum Calculator");
+        Font.loadFont(primaryStage.getScene().getClass().getResourceAsStream("file:src/resources/fonts/Roboto-Light.ttf"), 10);
+        primaryStage.getIcons().add(new Image("resources/icon.png"));
+        primaryStage.setTitle("Checksum Calculator " + applicationVersion);
         mainFXMLController = Controller.mainFXMLController;
         primaryStage.show();
-        primaryStage.resizableProperty().setValue(false);
+        primaryStage.setResizable(false);
         primaryStage.toFront();
 
 

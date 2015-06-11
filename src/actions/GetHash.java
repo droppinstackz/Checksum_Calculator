@@ -39,7 +39,6 @@ public class GetHash implements Runnable {
 
     private Controller mainFXMLController;
 
-
     @Override
     public void run() {
         try {
@@ -117,8 +116,10 @@ public class GetHash implements Runnable {
                 } catch (IOException e) {
                     if (ABORTED){ // If the user voluntarily aborted the thread
                         mainFXMLController.returnChecksum("                      Calculation stopped", 2);
+                        ABORTED = false;
                     } else {
-                        mainFXMLController.returnChecksum("IO error", 1);
+                        mainFXMLController.returnChecksum("IO error. The file may have been modified while a checksum was" +
+                                "being generated.", 1);
                         e.printStackTrace();
                     }
                 }

@@ -19,6 +19,7 @@
         * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -81,7 +82,27 @@
                 </Button>
                 <Button fx:id="copyButton" mnemonicParsing="false" onMouseClicked="#handleCopyButtonAction" prefHeight="28.0" prefWidth="86.0" text="Copy" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
                 <Button fx:id="clearButton" mnemonicParsing="false" onMouseClicked="#handleClearButtonAction" prefHeight="28.0" prefWidth="86.0" text="Clear" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-                <GridPane maxHeight="68.0" maxWidth="327.0" minHeight="68.0" minWidth="327.0" prefHeight="68.0" prefWidth="327.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                <ProgressIndicator fx:id="progressIndicator" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets left="70.0" />
+                    </GridPane.margin>
+                </ProgressIndicator>
+                <Label fx:id="waitLine1" text="Calculating..." GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                    <GridPane.margin>
+                        <Insets left="158.0" top="10.0" />
+                    </GridPane.margin>
+                </Label>
+                <Label fx:id="waitLine2Size" text="" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                    <GridPane.margin>
+                        <Insets bottom="3.0" left="158.0" />
+                    </GridPane.margin>
+                </Label>
+                <Label fx:id="waitLine3" text="(This may take a while)" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                    <GridPane.margin>
+                        <Insets bottom="13.0" left="158.0" />
+                    </GridPane.margin>
+                </Label>
+                <GridPane maxHeight="68.0" maxWidth="350.0" minHeight="68.0" minWidth="327.0" prefHeight="68.0" prefWidth="350.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
@@ -94,29 +115,9 @@
                                 <Insets bottom="2.0" left="4.0" right="4.0" top="2.0" />
                             </padding>
                         </Label>
-                        <ProgressIndicator fx:id="progressIndicator" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0">
-                            <GridPane.margin>
-                                <Insets left="70.0" />
-                            </GridPane.margin>
-                        </ProgressIndicator>
-                        <Label fx:id="waitLine1" text="Calculating..." GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                            <GridPane.margin>
-                                <Insets left="58.0" top="5.0" />
-                            </GridPane.margin>
-                        </Label>
-                        <Label fx:id="waitLine2Size" text="312 bytes" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-                            <GridPane.margin>
-                                <Insets bottom="3.0" left="150.0" />
-                            </GridPane.margin>
-                        </Label>
-                        <Label fx:id="waitLine3" text="(This may take a while)" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                            <GridPane.margin>
-                                <Insets bottom="7.0" left="128.0" />
-                            </GridPane.margin>
-                        </Label>
                     </children>
                 </GridPane>
-                <GridPane maxHeight="68.0" maxWidth="327.0" minHeight="68.0" minWidth="327.0" prefHeight="68.0" prefWidth="327.0" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+                <GridPane maxHeight="68.0" maxWidth="350.0" minHeight="68.0" minWidth="350.0" prefHeight="68.0" prefWidth="350.0" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
