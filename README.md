@@ -27,14 +27,14 @@ On startup, the application looks like this: <br>
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/startup.png">
 </p>
 
-<br><br>
+<br>
 
 The first dropdown contains all the possible algorithms, with MD5 selected by default. Currently, the supported algorithms are MD5, SHA-1, SHA-256, SHA-384, and SHA-512. More will be added in future releases or when new standards are announced. <br>
 <p align="center">
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/algorithms.png">
 </p>
 
-<br><br>
+<br>
 
 The second dropdown shows the possible input selection types. With the `Text` option, you can simply type text in the top text-bar to generate a hash. When `File` is selected (default), the `Open` button is enabled, and you can select any file from the filesystem instead. <br>
 <p align="center">
@@ -42,7 +42,7 @@ The second dropdown shows the possible input selection types. With the `Text` op
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/fileloaded.png">
 </p>
 
-<br><br>
+<br>
 
 The `Generate` button starts hashing the text or file selected. If you want to halt the hash generation safely, (files over 200MB will take a few seconds or longer), you can click the `Stop` button. <br>
 <p align="center">
