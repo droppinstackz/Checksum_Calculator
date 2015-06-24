@@ -23,22 +23,23 @@ import utils.PreferencesLoader;
 /**
  * Controller for the Checksum Calculator GUI
  *
- * Copyright (C) 2015 droppinstackz
- *
  * This file is part of Checksum Calculator.
  *
- * Checksum Calculator is free software: you can redistribute it and/or modify
+ * Copyright (C) 2015  droppinstackz
+ *
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Checksum Calculator is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 public class Controller implements Initializable {
 
@@ -79,6 +80,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         // Initialize the algorithmType ChoiceBox
+        algorithmType.setVisibleRowCount(15);
         algorithmType.setItems(FXCollections.observableArrayList());
         algorithmType.getItems().add(0, "MD5");
         algorithmType.getItems().add(1, "SHA-1");
@@ -87,11 +89,11 @@ public class Controller implements Initializable {
         algorithmType.getItems().add(4, "SHA-512");
         algorithmType.setValue(PreferencesLoader.getAlgorithmType());
 
+
         // Set the checksum result fields blank and enable & disable the appropriate elements
         firstChecksum.setText("");
         secondChecksum.setText("");
 
-        // Initialize the inputType ChoiceBox
         if(PreferencesLoader.getInputType().equals("Text")) {
             inputType.setText("File"); // Messy workaround to initialize the application correctly
             handleTextInputTypeSelection();
@@ -191,7 +193,8 @@ public class Controller implements Initializable {
         if (inputType.getText().equals("Text")) {
             inputTextField.setDisable(true);
 
-            ght = new GetHash(algorithmType.getValue().toString().toUpperCase(), inputTextField.getText(), Controller.this);
+            ght = new GetHash(algorithmType.getValue().toString().toUpperCase(), inputTextField.getText(),
+                    Controller.this);
             new Thread(ght).start();
 
         } else if (inputType.getText().equals("File") && (inputFile != null)) {
@@ -210,7 +213,8 @@ public class Controller implements Initializable {
                 e.printStackTrace();
 
             } catch (IOException ioEX1) {
-                returnChecksum("The file could not be read. It may have been moved, renamed, or deleted while in use.", 1);
+                returnChecksum("The file could not be read. It may have been moved, renamed, " +
+                        "or deleted while in use.", 1);
                 ioEX1.printStackTrace();
             }
         }
@@ -287,33 +291,6 @@ public class Controller implements Initializable {
                 } else {
                     displayError("Could not read the clipboard - it may be empty.", secondChecksum);
                 }
-
-
-
-
-
-                /*
-                // Retrieve contents from the clipboard
-                Clipboard clipboardPaste = Toolkit.getDefaultToolkit().getSystemClipboard();
-                Transferable validContents = clipboardPaste.getContents(null);
-
-                // If the contents are not null and are of type string
-                if ((validContents != null) && validContents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    // Try to retrieve the string contents
-                    String clipboardContents = "";
-                    try {
-                        clipboardContents = (String) validContents.getTransferData(DataFlavor.stringFlavor);
-                    } catch (UnsupportedFlavorException e) {
-                        displayError("Error: string DataFlavor types are not supported.", secondChecksum);
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        displayError("Error: could not read the clipboard. It may be empty.", secondChecksum);
-                        e.printStackTrace();
-                    }
-
-
-                }
-                */
             } catch (Exception e) {
                 displayError("The clipboard could not be accessed. Another application " +
                         "may currently be accessing it.", secondChecksum);

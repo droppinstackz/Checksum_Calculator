@@ -9,22 +9,23 @@ import java.io.*;
 /**
  * Generates a hash of a string or a file using the Apache Commons Codec.
  *
- * Copyright (C) 2015 droppinstackz
- *
  * This file is part of Checksum Calculator.
  *
- * Checksum Calculator is free software: you can redistribute it and/or modify
+ * Copyright (C) 2015  droppinstackz
+ *
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Checksum Calculator is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Checksum Calculator.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 public class GetHash implements Runnable {
@@ -115,7 +116,7 @@ public class GetHash implements Runnable {
                     }
                 } catch (IOException e) {
                     if (ABORTED){ // If the user voluntarily aborted the thread
-                        mainFXMLController.returnChecksum("                      Calculation stopped", 2);
+                        mainFXMLController.returnChecksum("                         Calculation stopped", 2);
                         ABORTED = false;
                     } else {
                         mainFXMLController.returnChecksum("IO error. The file may have been modified while a checksum was" +
