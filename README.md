@@ -12,8 +12,6 @@
 
 ***
 
-<br><br><br>
-
 ## Download
 
 [Checksum_Calculator.jar](https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/Checksum_Calculator.jar) (386 KB)
@@ -21,8 +19,6 @@
 To run, just double-click the file, or run 'java -jar Checksum Calculator.jar' in the command line. 
 
 This application needs [Java 8](https://www.java.com/en/download/) or higher installed
-
-<br><br><br><br>
 
 ## How to use
 
@@ -43,8 +39,8 @@ The first dropdown contains all the possible algorithms, with MD5 selected by de
 The second dropdown shows the possible input selection types. With the 'Text' option, you can simply type text in the top text-bar to generate a hash. When 'File' is selected (default), the 'Open' button is enabled, and you can select any file from the filesystem instead. <br>
 <p align="center">
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/text.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/loaded.png">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/fileloaded.png">
 </p>
 
 <br><br>
@@ -52,7 +48,7 @@ The second dropdown shows the possible input selection types. With the 'Text' op
 The 'Generate' button starts hashing the text or file selected. If you want to halt the hash generation safely, (files over 200MB will take a few seconds or longer), you can click the 'Stop' button. <br>
 <p align="center">
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/textgenerated.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/generating.png">
 </p>
 The 'Copy' button copies the hash from the 'Result:' section to your clipboard.
@@ -64,15 +60,13 @@ When the 'Compare To:' box is checked, any text pasted (with the 'Paste' button)
 Note: since the longest hash result (SHA-512) is 128 characters long, the longest string that can be pasted in must be 128 characters. <br>
 <p align="center">
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/match.png">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <img src="https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/non-match.png">
 </p>
 
 <br><br>
 
 The application will also remember your previous selections for algorithm type, input selection, and if the 'Compare To:' check-box is checked. (The settings are saved under the user's home directory in a folder called '.checksumCalc')
-
-<br><br><br><br>
 
 ## About
 
