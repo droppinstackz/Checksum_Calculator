@@ -7,7 +7,7 @@
 <p align="center">
     A simple, lightweight JavaFX application for generating checksum hashes		
     <br><br>
-    <sub> Currently supports: `MD5`, `SHA-1`, `SHA-256`, `SHA-384`, and `SHA-512` </sub>
+    <sub> Currently supports:  MD5,  SHA-1,  SHA-256,  SHA-384, and  SHA-512 </sub>
 </p>
 
 ***
@@ -63,7 +63,7 @@ Note: since the longest hash result (SHA-512) is 128 characters long, the longes
 
 <br>
 
-The application will also remember your previous selections for algorithm type, input selection, and if the `Compare To:` check-box is checked. (The settings are saved under the user`s home directory in a folder called `.checksumCalc`)
+The application will also remember your previous selections for algorithm type, input selection, and if the `Compare To:` check-box is checked. (The settings are saved under the user's home directory in a folder called `.checksumCalc`)
 
 ## About
 
