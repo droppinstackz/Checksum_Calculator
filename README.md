@@ -16,7 +16,7 @@
 
 [Checksum_Calculator.jar](https://raw.githubusercontent.com/droppinstackz/Checksum_Calculator/master/docs/Checksum_Calculator.jar) (480 KB)
 
-To run, just double-click the file or run `java -jar Checksum Calculator.jar` in the command line.
+To run, just double-click the file or run `java -jar Checksum_Calculator.jar` in the command line.
 
 This application needs [Java 8](https://www.java.com/en/download/) or higher installed
 
